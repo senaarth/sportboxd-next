@@ -121,7 +121,7 @@ export function DatePicker({ defaultValue, onDatePick }: DatePickerProps) {
               "transition-all",
               isExpanded ? "" : "rotate-180"
             )}
-            src="icons/chevron_up.svg"
+            src="/img/icons/chevron_up.svg"
           />
         </button>
         <div

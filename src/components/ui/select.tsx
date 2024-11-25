@@ -24,11 +24,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <img
-        alt="Ícone de seta indicando que o botão expande a visualização"
-        className="rotate-180"
-        src="icons/chevron_up.svg"
-      />
+      <ChevronDown className="text-neutral-500" size={16} />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));

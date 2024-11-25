@@ -27,4 +27,12 @@ function getNextDay(date: Date): Date {
   return new Date(date.getTime() + 24 * 60 * 60 * 1000);
 }
 
-export { formatDateLabel, getNextDay };
+function getPreviousWeek(date: Date): Date {
+  return new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000);
+}
+
+function getPreviousMonth(date: Date): Date {
+  return new Date(date.getTime() - 30 * 24 * 60 * 60 * 1000);
+}
+
+export { formatDateLabel, getNextDay, getPreviousWeek, getPreviousMonth };

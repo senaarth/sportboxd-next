@@ -43,7 +43,7 @@ const CrestComponent = ({ league, team }: { league: string; team: string }) => {
           (e.target as HTMLImageElement).src = "/img/crest_fallback.png";
         }}
       />
-      <p className="text-base text-neutral-200">{team}</p>
+      <p className="text-base text-neutral-200 text-center">{team}</p>
     </div>
   );
 };
