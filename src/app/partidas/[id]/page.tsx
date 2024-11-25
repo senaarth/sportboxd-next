@@ -48,10 +48,14 @@ const CrestComponent = ({ league, team }: { league: string; team: string }) => {
   );
 };
 
-export default function MatchPage({ params }: { params: { id: string } }) {
+export default async function MatchPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = params.id;
+  const id = (await params).id;
   const [isRatingModalOpen, setRatingModalOpen] = useState<boolean>(false);
   const [ratingToShare, setRatingToShare] = useState<Rating | null>(null);
   const [ratingValue, setRatingValue] = useState<number>(0);

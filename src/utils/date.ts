@@ -19,7 +19,7 @@ function formatDateLabel(date?: Date): string {
   return date.toLocaleDateString("pt-BR", {
     day: "numeric",
     month: "short",
-    year: "numeric",
+    ...(date.getFullYear === today.getFullYear ? {} : { year: "numeric" }),
   });
 }
 

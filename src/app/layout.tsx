@@ -59,7 +59,7 @@ export default function RootLayout({
           content="/img/webpreview.png"
         />
       </head>
-      <body className="antialiased font-inter flex flex-col items-star justify-start min-h-svh bg-neutral-950">
+      <body className="antialiased font-inter flex flex-col items-center justify-start min-h-svh bg-neutral-950">
         <QueryClientProvider client={queryClient}>
           <AuthProvider>{children}</AuthProvider>
         </QueryClientProvider>

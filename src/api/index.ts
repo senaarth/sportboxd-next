@@ -24,9 +24,10 @@ api.interceptors.request.use(authorization);
 async function getMatches(
   since: Date | undefined,
   until: Date | undefined,
-  league: string,
+  league: string | undefined,
   currentPage: number,
-  orderBy: string
+  orderBy: string,
+  limit: number | undefined
 ) {
   return await api
     .get(`/matches/`, {
@@ -34,8 +35,8 @@ async function getMatches(
         since: since?.toISOString(),
         until: until ? getNextDay(until).toISOString() : undefined,
         league,
-        skip: 15 * currentPage,
-        limit: 15,
+        skip: (limit || 0) * currentPage,
+        limit: limit || 0,
         order_by: orderBy,
       },
     })
