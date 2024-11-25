@@ -223,7 +223,7 @@ export default function Home() {
                   index === 0 ? "ml-4" : "",
                   index === mostCommentedData?.matches.length - 1 ? "mr-4" : 0
                 )}
-                href={`/partidas/${match.matchId}`}
+                href={`/matches/${match.matchId}`}
               >
                 <div className="flex items-center justify-start gap-2">
                   <img
