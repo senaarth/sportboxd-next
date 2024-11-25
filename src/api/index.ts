@@ -12,6 +12,8 @@ const api = axios.create({
 export async function authorization(
   config: InternalAxiosRequestConfig<any>
 ): Promise<InternalAxiosRequestConfig<any>> {
+  if (typeof window === "undefined") return config;
+
   const token = await getUserToken();
 
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -131,7 +133,8 @@ async function getMatchById(matchId: string) {
         }),
       };
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err);
       // throw new Error("Erro ao buscar partida");
       return {
         matchId: "not-found",

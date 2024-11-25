@@ -37,27 +37,21 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
           rel="stylesheet"
         />
-        <title data-rh="true">Sportboxd</title>
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2303783235779047"
           crossOrigin="anonymous"
         ></script>
+        {/* <title>Sportboxd</title>
         <meta
-          data-rh="true"
           property="og:title"
           content="Sportboxd: Avalie e Descubra os Melhores Jogos de Futebol"
         />
         <meta
-          data-rh="true"
           property="og:description"
           content="Explore, avalie e compartilhe sua opinião sobre partidas de futebol. Dê o seu pitaco, veja as resenhas da galera e reviva os maiores momentos do esporte! É rápido, fácil e grátis."
         />
-        <meta
-          data-rh="true"
-          property="og:image"
-          content="/img/webpreview.png"
-        />
+        <meta property="og:image" content="/img/webpreview.png" /> */}
       </head>
       <body className="antialiased font-inter flex flex-col items-center justify-start min-h-svh bg-neutral-950">
         <QueryClientProvider client={queryClient}>
