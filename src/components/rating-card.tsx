@@ -83,10 +83,10 @@ export const RatingCard = ({
       )}
       <div className="w-full flex items-center justify-between mt-2">
         <div className="flex items-center gap-1.5">
-          <button className="mr-0.5" type="button">
+          {/* <button className="mr-0.5" type="button">
             <img
               className="w-4 h-4"
-              src="/icons/thumbs_up_filled.svg"
+              src="/img/icons/thumbs_up_filled.svg"
               alt="ícone de compartilhar"
             />
           </button>
@@ -100,10 +100,10 @@ export const RatingCard = ({
           <button type="button">
             <img
               className="w-5 h-5"
-              src="/icons/thumbs_down_outline.svg"
+              src="/img/icons/thumbs_down_outline.svg"
               alt="ícone de compartilhar"
             />
-          </button>
+          </button> */}
         </div>
         <button
           className="p-1 rounded hover:bg-neutral-800 ml-auto"
@@ -112,7 +112,7 @@ export const RatingCard = ({
         >
           <img
             className="w-4 h-4"
-            src="/icons/share.svg"
+            src="/img/icons/share.svg"
             alt="ícone de compartilhar"
           />
         </button>

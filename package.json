@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
-    "@next/font": "^14.2.15",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-toast": "^1.2.2",
     "axios": "^1.7.7",

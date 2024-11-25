@@ -104,10 +104,11 @@ export function ShareRatingModal({
               <div className="flex items-center gap-1">
                 <img
                   className="h-6 w-6 object-contain"
-                  src={`/crests/${match.league}/${match.homeTeam}.png`}
+                  src={`/img/crests/${match.league}/${match.homeTeam}.png`}
                   alt={`escudo do time da casa, ${match.homeTeam}`}
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/crest_fallback.png";
+                    (e.target as HTMLImageElement).src =
+                      "/img/crest_fallback.png";
                   }}
                 />
                 <p className="text-[0.625rem] text-neutral-200">
@@ -115,10 +116,11 @@ export function ShareRatingModal({
                 </p>
                 <img
                   className="h-6 w-6 object-contain"
-                  src={`/crests/${match.league}/${match.awayTeam}.png`}
+                  src={`/img/crests/${match.league}/${match.awayTeam}.png`}
                   alt={`escudo do time da casa, ${match.awayTeam}`}
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/crest_fallback.png";
+                    (e.target as HTMLImageElement).src =
+                      "/img/crest_fallback.png";
                   }}
                 />
               </div>
@@ -139,7 +141,7 @@ export function ShareRatingModal({
               >
                 <img
                   className="h-6 w-6"
-                  src="/icons/twitter.svg"
+                  src="/img/icons/twitter.svg"
                   alt="ícone twitter"
                 />
               </a>
@@ -150,7 +152,7 @@ export function ShareRatingModal({
               >
                 <img
                   className="h-6 w-6"
-                  src="/icons/facebook.svg"
+                  src="/img/icons/facebook.svg"
                   alt="ícone facebook"
                 />
               </a>
@@ -161,7 +163,7 @@ export function ShareRatingModal({
               >
                 <img
                   className="h-6 w-6"
-                  src="/icons/telegram.svg"
+                  src="/img/icons/telegram.svg"
                   alt="ícone telegram"
                 />
               </a>
@@ -172,7 +174,7 @@ export function ShareRatingModal({
               >
                 <img
                   className="h-6 w-6"
-                  src="/icons/whatsapp.svg"
+                  src="/img/icons/whatsapp.svg"
                   alt="ícone whatsapp"
                 />
               </a>
@@ -204,7 +206,7 @@ export function ShareRatingModal({
                 </p>
                 <img
                   className="w-5 h-5"
-                  src="/icons/copy.svg"
+                  src="/img/icons/copy.svg"
                   alt="ícone de copiar"
                 />
               </div>

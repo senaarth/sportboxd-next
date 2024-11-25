@@ -58,7 +58,7 @@ export function Stars({ color, number, onStarClick, size }: StarsProps) {
               sizeVariants[size].size
             )}
             style={{
-              maskImage: `url(/icons/star_mask.svg)`,
+              maskImage: `url(/img/icons/star_mask.svg)`,
               maskSize: "100%",
               maskRepeat: "no-repeat",
             }}
