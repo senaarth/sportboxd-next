@@ -70,8 +70,9 @@ export default function MatchPage() {
     () => match?.ratings.find((rating) => rating.ratingId === ratingId),
     [ratingId]
   );
-
-  if (isLoading || error || !match) return <LoadingScreen />;
+  console.log(isLoading, error, match);
+  if (isLoading || error || !match || !Object.keys(match)?.length)
+    return <LoadingScreen />;
 
   return (
     <div className="w-full min-h-svh bg-neutral-950">
