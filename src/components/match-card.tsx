@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 interface MatchCardProps {
   matchId: string;
@@ -35,19 +35,29 @@ export function MatchCard({
       type="button"
     >
       <div className="w-full flex flex-col gap-4">
+        <p className="text-neutral-500 text-xs flex items-center gap-2">
+          {status === "FINISHED" || matchId === "673a106c1b576d2329fee225" ? (
+            "Encerrado"
+          ) : (
+            <>
+              <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
+              Ao vivo
+            </>
+          )}
+        </p>
         <div className="w-full flex flex-row items-center justify-start gap-1.5">
           <img
-            className="h-11 w-11 object-contain p-0.5"
+            className="h-8 w-8 object-contain p-0.5"
             src={`/img/crests/${league}/${homeTeam}.png`}
             alt={`escudo do time da casa, ${homeTeam}`}
             onError={(e) => {
               (e.target as HTMLImageElement).src = "/img/crest_fallback.png";
             }}
           />
-          <p className="text-base text-neutral-100">{homeTeam}</p>
+          <p className="text-sm text-neutral-100">{homeTeam}</p>
           <p
             className={twMerge(
-              "text-lg ml-auto flex items-center gap-2",
+              "text-base ml-auto flex items-center gap-2",
               homeScore > awayScore ? "text-neutral-100" : "text-neutral-400"
             )}
           >
@@ -64,17 +74,17 @@ export function MatchCard({
         </div>
         <div className="w-full flex flex-row items-center justify-start gap-1">
           <img
-            className="h-11 w-11 object-contain p-0.5"
+            className="h-8 w-8 object-contain p-0.5"
             src={`/img/crests/${league}/${awayTeam}.png`}
             alt={`escudo do time da casa, ${awayTeam}`}
             onError={(e) => {
               (e.target as HTMLImageElement).src = "/img/crest_fallback.png";
             }}
           />
-          <p className="text-base text-neutral-100">{awayTeam}</p>
+          <p className="text-sm text-neutral-100">{awayTeam}</p>
           <p
             className={twMerge(
-              "text-lg ml-auto flex items-center gap-2",
+              "text-base ml-auto flex items-center gap-2",
               awayScore > homeScore ? "text-neutral-100" : "text-neutral-400"
             )}
           >
@@ -93,21 +103,11 @@ export function MatchCard({
       <div className="w-full flex items-center justify-between">
         <div className="flex items-center gap-1">
           <Stars color="lime" number={avgRating} size="xs" />
-          <p className="text-xs text-neutral-100">{avgRating}/5</p>
-        </div>
-        <div className="flex flex-col items-end">
-          <p className="text-neutral-500 text-xs flex items-center gap-2">
-            {status === "FINISHED" || matchId === "673a106c1b576d2329fee225" ? (
-              "Encerrado"
-            ) : (
-              <>
-                <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
-                Em andamento
-              </>
-            )}
+          <p className="text-xs text-neutral-100 font-semibold">
+            {avgRating}/5
           </p>
-          <p className="text-neutral-500 text-xs">{ratingsNum} avaliações</p>
         </div>
+        <p className="text-neutral-500 text-xs">{ratingsNum} avaliações</p>
       </div>
     </button>
   );

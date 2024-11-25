@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 
 const sizeVariants = {
   xs: "h-4 w-4 border-2",
-  sm: "",
+  sm: "h-6 w-6 border-2",
   base: "h-10 w-10 border-4",
   lg: "",
 };

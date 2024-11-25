@@ -3,8 +3,10 @@ export {};
 declare global {
   type League = {
     code: string;
-    sport: "soccer";
+    sport: "soccer" | "basketball";
     label: string;
+    logo: string;
+    isAvailable: boolean;
   };
 
   type Match = {

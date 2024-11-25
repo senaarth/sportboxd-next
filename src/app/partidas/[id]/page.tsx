@@ -10,7 +10,7 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { ShareRatingModal } from "@/components/share-rating-modal";
 import { twMerge } from "tailwind-merge";
 import { RatingCard } from "@/components/rating-card";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 
 const RatingProportionComponent = ({
   rating,
@@ -48,14 +48,11 @@ const CrestComponent = ({ league, team }: { league: string; team: string }) => {
   );
 };
 
-export default async function MatchPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function MatchPage() {
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = (await params).id;
+  const id = params.id;
   const [isRatingModalOpen, setRatingModalOpen] = useState<boolean>(false);
   const [ratingToShare, setRatingToShare] = useState<Rating | null>(null);
   const [ratingValue, setRatingValue] = useState<number>(0);
