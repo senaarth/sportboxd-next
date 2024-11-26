@@ -1,16 +1,15 @@
 "use client";
 
 import { useQuery } from "react-query";
-import { formatDateLabel } from "@/utils/date";
 import { Stars } from "@/components/stars";
 import { RatingModal } from "@/components/rating-modal";
-import { useMemo, useState } from "react";
-import { getMatchById } from "@/api";
+import { useEffect, useMemo, useState } from "react";
+import { createMatchPreview, createRatingPreview, getMatchById } from "@/api";
 import { LoadingScreen } from "@/components/loading-screen";
 import { ShareRatingModal } from "@/components/share-rating-modal";
 import { twMerge } from "tailwind-merge";
 import { RatingCard } from "@/components/rating-card";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 import { availableLeagues } from "@/utils/constants";
 
@@ -75,6 +74,22 @@ export default function MatchPage() {
     return availableLeagues.find((league) => league.code === match?.league);
   }, [match]);
 
+  async function createPreview() {
+    if (match) await createMatchPreview(match);
+  }
+
+  async function createPreviewWithRating() {
+    if (match && sharedRating) await createRatingPreview(match, sharedRating);
+  }
+
+  useEffect(() => {
+    createPreview();
+  }, [match]);
+
+  useEffect(() => {
+    createPreviewWithRating();
+  }, [sharedRating]);
+
   if (isLoading || error || !match || !Object.keys(match)?.length)
     return <LoadingScreen />;
 
@@ -93,64 +108,66 @@ export default function MatchPage() {
             />
             Voltar
           </Link>
-          <div className="w-full p-4 grid grid-cols-3">
-            <CrestComponent league={match.league} team={match.homeTeam} />
-            <div className="flex flex-col items-center gap-3">
-              {matchLeague ? (
-                <p className="text-sm font-semibold text-neutral-200 text-center px-3.5 py-1 rounded-full bg-white bg-opacity-[0.1] flex items-center gap-2">
-                  <img
-                    className="w-5 h-5 object-contain"
-                    src={matchLeague.logo}
-                    alt={`${matchLeague.label} logo`}
-                  />
-                  {matchLeague.label}
-                </p>
-              ) : null}
-              <div className="flex items-center justify-center gap-2">
-                <p className="text-3xl text-neutral-200 font-semibold flex items-center gap-2">
-                  <span
-                    className={twMerge(
-                      "w-1 h-1 rounded-full",
-                      match.homeScore > match.awayScore &&
-                        match.status === "FINISHED"
-                        ? "bg-lime-500"
-                        : "bg-transparent"
-                    )}
-                  />
-                  {match.homeScore}
-                </p>
-                <p className="text-3xl text-neutral-200 font-semibold">-</p>
-                <p className="text-3xl text-neutral-200 font-semibold flex items-center gap-2">
-                  {match.awayScore}
-                  <span
-                    className={twMerge(
-                      "w-1 h-1 rounded-full",
-                      match.awayScore > match.homeScore &&
-                        match.status === "FINISHED"
-                        ? "bg-lime-500"
-                        : "bg-transparent"
-                    )}
-                  />
-                </p>
-              </div>
-              <p className="text-xs text-neutral-200 flex items-center gap-2 ">
-                {match.status === "FINISHED" ||
-                match.matchId === "673a106c1b576d2329fee225" ? (
-                  "Encerrado"
-                ) : (
-                  <>
-                    Em andamento
+          <div className="w-full flex flex-col items-center">
+            {matchLeague ? (
+              <p className="text-sm font-semibold text-neutral-200 text-center px-3.5 py-1 rounded-full bg-white bg-opacity-[0.1] flex items-center gap-2 w-fit">
+                <img
+                  className="w-5 h-5 object-contain"
+                  src={matchLeague.logo}
+                  alt={`${matchLeague.label} logo`}
+                />
+                {matchLeague.label}
+              </p>
+            ) : null}
+            <div className="w-full p-4 grid grid-cols-3">
+              <CrestComponent league={match.league} team={match.homeTeam} />
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center justify-center gap-2">
+                  <p className="text-3xl text-neutral-200 font-semibold flex items-center gap-2">
                     <span
                       className={twMerge(
-                        "w-1 h-1 rounded-full bg-lime-400",
-                        "animate-ping"
+                        "w-1 h-1 rounded-full",
+                        match.homeScore > match.awayScore &&
+                          match.status === "FINISHED"
+                          ? "bg-lime-500"
+                          : "bg-transparent"
                       )}
                     />
-                  </>
-                )}
-              </p>
+                    {match.homeScore}
+                  </p>
+                  <p className="text-3xl text-neutral-200 font-semibold">-</p>
+                  <p className="text-3xl text-neutral-200 font-semibold flex items-center gap-2">
+                    {match.awayScore}
+                    <span
+                      className={twMerge(
+                        "w-1 h-1 rounded-full",
+                        match.awayScore > match.homeScore &&
+                          match.status === "FINISHED"
+                          ? "bg-lime-500"
+                          : "bg-transparent"
+                      )}
+                    />
+                  </p>
+                </div>
+                <p className="text-xs text-neutral-200 flex items-center gap-2 ">
+                  {match.status === "FINISHED" ||
+                  match.matchId === "673a106c1b576d2329fee225" ? (
+                    "Encerrado"
+                  ) : (
+                    <>
+                      Em andamento
+                      <span
+                        className={twMerge(
+                          "w-1 h-1 rounded-full bg-lime-400",
+                          "animate-ping"
+                        )}
+                      />
+                    </>
+                  )}
+                </p>
+              </div>
+              <CrestComponent league={match.league} team={match.awayTeam} />
             </div>
-            <CrestComponent league={match.league} team={match.awayTeam} />
           </div>
         </div>
       </div>
@@ -208,6 +225,7 @@ export default function MatchPage() {
                     Compartilhado com você
                   </p>
                   <RatingCard
+                    match={match}
                     rating={sharedRating}
                     setRatingToShare={setRatingToShare}
                   />
@@ -217,6 +235,7 @@ export default function MatchPage() {
               {match.ratings.map((rating) =>
                 rating.ratingId !== sharedRating?.ratingId ? (
                   <RatingCard
+                    match={match}
                     key={rating.ratingId}
                     rating={rating}
                     setRatingToShare={setRatingToShare}

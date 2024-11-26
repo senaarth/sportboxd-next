@@ -8,7 +8,11 @@ const s3 = new S3({
   region: "us-east-1",
 });
 
-async function uploadToS3(stream: Buffer, key: string) {
+async function uploadToS3(
+  stream: string | void | Uint8Array | Buffer,
+  key: string
+) {
+  if (!stream) return;
   s3.putObject(
     {
       Bucket: "yeon",
@@ -25,7 +29,7 @@ async function alreadyCreatedPreview(key: string) {
   try {
     const obj = await s3.getObject({
       Bucket: "yeon",
-      Key: "teste1.png",
+      Key: key,
     });
 
     // @ts-ignore

@@ -188,7 +188,7 @@ export function ShareRatingModal({
               onClick={() => {
                 navigator.share({
                   url: `https://${shareUrl}`,
-                  text: `Veja esta review de ${match.homeTeam} e ${match.awayTeam}`,
+                  text: `Veja esta resenha de ${match.homeTeam} e ${match.awayTeam}`,
                 });
               }}
               type="button"

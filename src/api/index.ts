@@ -202,7 +202,31 @@ async function updateRatingLikes(ratingId: string, isLike: boolean) {
   });
 }
 
+async function createMatchPreview({
+  matchId,
+  homeTeam,
+  homeScore,
+  awayTeam,
+  awayScore,
+  league,
+}: Match) {
+  await axios.get(
+    `/api/get-preview?match_id=${matchId}&home_team=${homeTeam}&away_team=${awayTeam}&league=${league}&home_score=${homeScore}&away_score=${awayScore}`
+  );
+}
+
+async function createRatingPreview(
+  { matchId, homeTeam, homeScore, awayTeam, awayScore, league }: Match,
+  { ratingId, title, author, comment }: Rating
+) {
+  await axios.get(
+    `/api/get-preview?match_id=${matchId}&home_team=${homeTeam}&away_team=${awayTeam}&league=${league}&home_score=${homeScore}&away_score=${awayScore}&rating_title=${title}&rating_author=${author}&rating_comment=${comment}&rating_id=${ratingId}`
+  );
+}
+
 export {
+  createMatchPreview,
+  createRatingPreview,
   getMatches,
   getMatchById,
   getMatchRatings,

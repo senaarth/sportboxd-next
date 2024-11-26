@@ -5,20 +5,24 @@ import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
 import { useMutation } from "react-query";
 import { Loading } from "@/components/loading";
+import { createRatingPreview } from "@/api";
 
 export const RatingCard = ({
+  match,
   rating,
   setRatingToShare,
 }: {
+  match: Match;
   rating: Rating;
   setRatingToShare: Dispatch<SetStateAction<Rating | null>>;
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
   const mutation = useMutation({
-    mutationFn: async () => {},
-    onError: () => {},
-    onSuccess: () => {},
+    mutationFn: async () => {
+      await createRatingPreview(match, rating);
+    },
+    retry: true,
   });
   const textRef = useRef<HTMLParagraphElement>(null);
 
@@ -107,7 +111,10 @@ export const RatingCard = ({
         </div>
         <button
           className="p-1 rounded hover:bg-neutral-800 ml-auto"
-          onClick={() => setRatingToShare(rating)}
+          onClick={() => {
+            setRatingToShare(rating);
+            mutation.mutate();
+          }}
           type="button"
         >
           <img

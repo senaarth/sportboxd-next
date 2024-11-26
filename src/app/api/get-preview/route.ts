@@ -1,7 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import playwright from "playwright-core";
+import puppeteerCore from "puppeteer-core";
+import puppeteer from "puppeteer";
 import chromium from "@sparticuz/chromium";
+
 import { alreadyCreatedPreview, uploadToS3 } from "@/utils/aws";
+
+export const dynamic = "force-dynamic";
+
+async function getBrowser() {
+  if (process.env.VERCEL_ENV === "production") {
+    const executablePath = await chromium.executablePath();
+
+    const browser = await puppeteerCore.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath,
+      headless: chromium.headless !== "shell",
+    });
+    return browser;
+  } else {
+    const browser = await puppeteer.launch();
+    return browser;
+  }
+}
 
 const getHTMLTemplate = (
   homeTeam: string | null,
@@ -23,16 +44,16 @@ const getHTMLTemplate = (
           <div class="w-full max-w-[80%] rounded-lg border border-neutral-700 bg-neutral-950 p-6 gap-4 flex flex-col">
             <div class="flex items-start justify-between">
                 <div class="flex flex-col gap-3">
-                  <p class="text-xl text-neutral-200 leading-[0.75rem]">${ratingAuthor}</p>
-                  <p class="text-lg text-neutral-200 leading-[0.875rem] font-semibold mb-1">${ratingTitle}</p>
+                  <p class="text-base leading-[0.875rem] text-neutral-200">${ratingAuthor}</p>
+                  <p class="text-sm leading-[0.875rem] text-neutral-200 mb-1">${ratingTitle}</p>
                 </div>
                 <div class="flex items-center gap-1">
                   <img class="h-8 w-8 object-contain" src="https://sportboxd-next.vercel.app/img/crests/${league}/${homeTeam}.png">
-                  <p class="text-lg text-neutral-200">${homeScore} - ${awayScore}</p>
+                  <p class="text-sm text-neutral-200">${homeScore} - ${awayScore}</p>
                   <img class="h-8 w-8 object-contain" src="https://sportboxd-next.vercel.app/img/crests/${league}/${awayTeam}.png">
                 </div>
             </div>
-            <p class="text-xl text-neutral-200 font-light line-clamp-2">${ratingComment}</p>
+            <p class="text-lg text-neutral-200 font-light line-clamp-2">${ratingComment}</p>
           </div>
         </body>
       </html>
@@ -78,26 +99,22 @@ const createPreview = async (
       awayScore
     );
 
-    const browser = await playwright.chromium.launch({
-      executablePath: await chromium.executablePath(),
-      headless: true,
-      args: chromium.args,
-    });
+    const browser = await getBrowser();
     const page = await browser.newPage();
-    const viewport = { width: 768, height: 768 };
 
-    await page.setViewportSize(viewport);
+    const viewport = { width: 768, height: 768 };
+    await page.setViewport(viewport);
     await page.setContent(htmlTemplate, {
-      waitUntil: "domcontentloaded",
-      timeout: 100000000,
+      waitUntil: "networkidle0",
     });
 
     const screenshotBuffer = await page.screenshot({ type: "png" });
     await browser.close();
 
     await uploadToS3(screenshotBuffer, imageKey);
-  } catch (err: unknown) {
-    if (err instanceof Error) throw new Error(err.message);
+  } catch (err) {
+    console.error("Error creating preview:", err);
+    throw err;
   }
 };
 
@@ -113,10 +130,10 @@ export async function GET(request: NextRequest) {
   const awayScore = request.nextUrl.searchParams.get("away_score");
   const homeScore = request.nextUrl.searchParams.get("home_score");
 
-  if (!homeTeam || !awayTeam) {
+  if (!matchId || !homeTeam || !awayTeam) {
     return new NextResponse(
       JSON.stringify({
-        name: "Please provide two teams to create the match preview",
+        name: "Please provide the matchId and two teams to create the match preview",
       }),
       { status: 400 }
     );
