@@ -93,33 +93,6 @@ function LeagueSection({
     }
   );
 
-  const footerButtonsContainer = () => (
-    <div className="w-full flex items-center justify-start gap-y-2 gap-x-3 py-2 max-sm:flex-wrap">
-      <button
-        className="text-sm hover:underline min-w-[7.5rem] text-start flex items-center gap-1"
-        onClick={() => setShowAllMatches(!showAllMatches)}
-        type="button"
-      >
-        {showAllMatches ? "Mostrar menos" : "Mostrar mais"}
-        <ChevronDown
-          size={16}
-          className={twMerge(
-            "transition-all",
-            showAllMatches ? "rotate-180" : ""
-          )}
-        />
-      </button>
-      <button
-        className="text-sm hover:underline w-full text-start flex items-center gap-1"
-        onClick={() => router.push(`/leagues/${league.code}`)}
-        type="button"
-      >
-        Ver página da liga
-        <ArrowRight size={16} />
-      </button>
-    </div>
-  );
-
   return (
     <div className="w-full max-w-4xl flex flex-col px-4 mb-6 gap-2">
       <button
@@ -160,17 +133,19 @@ function LeagueSection({
             <>
               <MatchesList
                 key={`matches-league-${league.code}`}
-                matches={matchesData.matches.slice(0, 2)}
+                matches={matchesData.matches}
                 groupByDate={false}
               />
-              {showAllMatches ? (
-                <MatchesList
-                  key={`matches-league-${league.code}`}
-                  matches={matchesData.matches.slice(2)}
-                  groupByDate={false}
-                />
-              ) : null}
-              {footerButtonsContainer()}
+              <div className="w-full flex items-center justify-start gap-y-2 gap-x-3 py-2 max-sm:flex-wrap">
+                <button
+                  className="text-sm hover:underline w-full text-start flex items-center gap-1"
+                  onClick={() => router.push(`/leagues/${league.code}`)}
+                  type="button"
+                >
+                  Ver página da liga
+                  <ArrowRight size={16} />
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -227,157 +202,169 @@ export default function Home() {
   );
 
   return (
-    <div className="w-full flex flex-col items-center justify-start py-5">
-      <div className="w-full max-w-4xl flex items-center justify-between mb-2 px-4">
-        <img
-          alt="Logo sportboxd, imagem com nome do site escrito"
-          className="h-7"
-          src="/img/sportboxd.svg"
-        />
-        <button
-          className={twMerge(
-            "text-sm px-2 py-1",
-            isAuthenticated ? "text-neutral-200" : "text-lime-500"
-          )}
-          onClick={isAuthenticated ? handleLogout : openLoginModal}
-          type="button"
-        >
-          {isAuthenticated ? "Sair" : "Entrar"}
-        </button>
-      </div>
-      <div className="w-full max-w-4xl flex flex-col items-start justify-start gap-2 py-4">
-        <p className="text-neutral-200 font-semibold text-sm ml-4">
-          Mais comentados
-        </p>
-        <div className="w-full max-w-full overflow-auto flex items-center justify-start gap-2">
-          {isLoadingMostCommented || errorMostCommented ? (
-            <>
-              <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg ml-4" />
-              <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg" />
-              <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg" />
-              <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg" />
-              <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg mr-4" />
-            </>
-          ) : (
-            mostCommentedData?.matches.map((match, index) => (
-              <Link
-                key={`most-commented-${match.matchId}`}
-                className={twMerge(
-                  "min-w-[143px] rounded-lg bg-neutral-900 border border-neutral-800 p-3 flex flex-col gap-2 hover:bg-neutral-800 hover:border-neutral-600",
-                  index === 0 ? "ml-4" : "",
-                  index === mostCommentedData?.matches.length - 1 ? "mr-4" : 0
-                )}
-                href={`/matches/${match.matchId}`}
-              >
-                <div className="flex items-center justify-start gap-2">
-                  <img
-                    className="w-4 h-4 object-contain"
-                    src={`/img/crests/${match.league}/${match.homeTeam}.png`}
-                    alt={`escudo do time da casa, ${match.homeTeam}`}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "/img/crest_fallback.png";
-                    }}
-                  />
-                  <p className="text-neutral-200 text-xs text-start line-clamp-1">
-                    {match.homeTeam}
-                  </p>
-                  <p
-                    className={twMerge(
-                      "text-xs",
-                      match.homeScore > match.awayScore
-                        ? "text-neutral-200"
-                        : "text-neutral-500"
-                    )}
-                  >
-                    {match.homeScore}
-                  </p>
-                </div>
-                <div className="flex items-center justify-start gap-2">
-                  <img
-                    className="w-4 h-4 object-contain"
-                    src={`/img/crests/${match.league}/${match.awayTeam}.png`}
-                    alt={`escudo do time visitante, ${match.awayTeam}`}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "/img/crest_fallback.png";
-                    }}
-                  />
-                  <p className="text-neutral-200 text-xs text-start line-clamp-1">
-                    {match.awayTeam}
-                  </p>
-                  <p
-                    className={twMerge(
-                      "text-xs",
-                      match.awayScore > match.homeScore
-                        ? "text-neutral-200"
-                        : "text-neutral-500"
-                    )}
-                  >
-                    {match.awayScore}
-                  </p>
-                </div>
-              </Link>
-            ))
-          )}
+    <>
+      <title>Sportboxd</title>
+      <meta
+        property="og:title"
+        content="Sportboxd: Avalie e Descubra os Melhores Jogos de Futebol"
+      />
+      <meta
+        property="og:description"
+        content="Explore, avalie e compartilhe sua opinião sobre partidas de futebol. Dê o seu pitaco, veja as resenhas da galera e reviva os maiores momentos do esporte! É rápido, fácil e grátis."
+      />
+      <meta property="og:image" content="/img/webpreview.png" />
+      <div className="w-full flex flex-col items-center justify-start py-5">
+        <div className="w-full max-w-4xl flex items-center justify-between mb-2 px-4">
+          <img
+            alt="Logo sportboxd, imagem com nome do site escrito"
+            className="h-7"
+            src="/img/sportboxd.svg"
+          />
+          <button
+            className={twMerge(
+              "text-sm px-2 py-1",
+              isAuthenticated ? "text-neutral-200" : "text-lime-500"
+            )}
+            onClick={isAuthenticated ? handleLogout : openLoginModal}
+            type="button"
+          >
+            {isAuthenticated ? "Sair" : "Entrar"}
+          </button>
         </div>
-      </div>
-      <div className="w-full max-w-4xl flex flex-col items-start gap-2 px-4 pt-2 pb-6">
-        <Select
-          value={ordering}
-          onValueChange={(value) => {
-            if (value !== ordering) setOrdering(value);
-            localStorage.setItem("sportboxd:selected_ordering", value);
-          }}
-        >
-          <SelectTrigger className="w-full gap-2 h-10 bg-neutral-900 border border-neutral-800 focus:ring-0 hover:bg-neutral-800 hover:border-neutral-700">
-            <SelectValue placeholder="Ordernar por" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="-date">Mais recentes</SelectItem>
-            <SelectItem value="date">Mais antigos</SelectItem>
-            <SelectItem value="-ratings_num">Mais relevantes</SelectItem>
-            <SelectItem value="-avg_rating">Melhor avaliados</SelectItem>
-            <SelectItem value="avg_rating">Pior avaliados</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="w-full flex gap-2">
-          <SelectDateButton
-            label="Hoje"
-            onSelect={() => selectFromDate(new Date())}
-            onRemoveSelection={() => selectFromDate(undefined)}
-            isSelected={fromDate?.getDate() === new Date().getDate()}
-          />
-          <SelectDateButton
-            label="Última semana"
-            onSelect={() => selectFromDate(getPreviousWeek(new Date()))}
-            onRemoveSelection={() => selectFromDate(undefined)}
-            isSelected={
-              fromDate?.getDate() === getPreviousWeek(new Date()).getDate()
-            }
-          />
-          <SelectDateButton
-            label="Último mês"
-            onSelect={() => selectFromDate(getPreviousMonth(new Date()))}
-            onRemoveSelection={() => selectFromDate(undefined)}
-            isSelected={
-              fromDate?.getDate() === getPreviousMonth(new Date()).getDate()
-            }
-          />
+        <div className="w-full max-w-4xl flex flex-col items-start justify-start gap-2 py-4">
+          <p className="text-neutral-200 font-semibold text-sm ml-4">
+            Mais comentados
+          </p>
+          <div className="w-full max-w-full overflow-auto flex items-center justify-start gap-2">
+            {isLoadingMostCommented || errorMostCommented ? (
+              <>
+                <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg ml-4" />
+                <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg" />
+                <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg" />
+                <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg" />
+                <Skeleton className="min-w-[143px] w-[143px] h-[62px] rounded-lg mr-4" />
+              </>
+            ) : (
+              mostCommentedData?.matches.map((match, index) => (
+                <Link
+                  key={`most-commented-${match.matchId}`}
+                  className={twMerge(
+                    "min-w-[143px] rounded-lg bg-neutral-900 border border-neutral-800 p-3 flex flex-col gap-2 hover:bg-neutral-800 hover:border-neutral-600",
+                    index === 0 ? "ml-4" : "",
+                    index === mostCommentedData?.matches.length - 1 ? "mr-4" : 0
+                  )}
+                  href={`/matches/${match.matchId}`}
+                >
+                  <div className="flex items-center justify-start gap-2">
+                    <img
+                      className="w-4 h-4 object-contain"
+                      src={`/img/crests/${match.league}/${match.homeTeam}.png`}
+                      alt={`escudo do time da casa, ${match.homeTeam}`}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/img/crest_fallback.png";
+                      }}
+                    />
+                    <p className="text-neutral-200 text-xs text-start line-clamp-1">
+                      {match.homeTeam}
+                    </p>
+                    <p
+                      className={twMerge(
+                        "text-xs",
+                        match.homeScore > match.awayScore
+                          ? "text-neutral-200"
+                          : "text-neutral-500"
+                      )}
+                    >
+                      {match.homeScore}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-start gap-2">
+                    <img
+                      className="w-4 h-4 object-contain"
+                      src={`/img/crests/${match.league}/${match.awayTeam}.png`}
+                      alt={`escudo do time visitante, ${match.awayTeam}`}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/img/crest_fallback.png";
+                      }}
+                    />
+                    <p className="text-neutral-200 text-xs text-start line-clamp-1">
+                      {match.awayTeam}
+                    </p>
+                    <p
+                      className={twMerge(
+                        "text-xs",
+                        match.awayScore > match.homeScore
+                          ? "text-neutral-200"
+                          : "text-neutral-500"
+                      )}
+                    >
+                      {match.awayScore}
+                    </p>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
+        <div className="w-full max-w-4xl flex flex-col items-start gap-2 px-4 pt-2 pb-6">
+          <Select
+            value={ordering}
+            onValueChange={(value) => {
+              if (value !== ordering) setOrdering(value);
+              localStorage.setItem("sportboxd:selected_ordering", value);
+            }}
+          >
+            <SelectTrigger className="w-full gap-2 h-10 bg-neutral-900 border border-neutral-800 focus:ring-0 hover:bg-neutral-800 hover:border-neutral-700">
+              <SelectValue placeholder="Ordernar por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="-date">Mais recentes</SelectItem>
+              <SelectItem value="date">Mais antigos</SelectItem>
+              <SelectItem value="-ratings_num">Mais relevantes</SelectItem>
+              <SelectItem value="-avg_rating">Melhor avaliados</SelectItem>
+              <SelectItem value="avg_rating">Pior avaliados</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="w-full flex gap-2">
+            <SelectDateButton
+              label="Hoje"
+              onSelect={() => selectFromDate(new Date())}
+              onRemoveSelection={() => selectFromDate(undefined)}
+              isSelected={fromDate?.getDate() === new Date().getDate()}
+            />
+            <SelectDateButton
+              label="Última semana"
+              onSelect={() => selectFromDate(getPreviousWeek(new Date()))}
+              onRemoveSelection={() => selectFromDate(undefined)}
+              isSelected={
+                fromDate?.getDate() === getPreviousWeek(new Date()).getDate()
+              }
+            />
+            <SelectDateButton
+              label="Último mês"
+              onSelect={() => selectFromDate(getPreviousMonth(new Date()))}
+              onRemoveSelection={() => selectFromDate(undefined)}
+              isSelected={
+                fromDate?.getDate() === getPreviousMonth(new Date()).getDate()
+              }
+            />
+          </div>
+        </div>
+        {availableLeagues.map((league, index) => {
+          return (
+            <LeagueSection
+              key={`${league.code}-home-section`}
+              league={league}
+              fromDate={fromDate}
+              toDate={toDate}
+              ordering={ordering}
+              startExpanded={index < 2}
+            />
+          );
+        })}
       </div>
-      {availableLeagues.map((league, index) => {
-        return (
-          <LeagueSection
-            key={`${league.code}-home-section`}
-            league={league}
-            fromDate={fromDate}
-            toDate={toDate}
-            ordering={ordering}
-            startExpanded={index < 2}
-          />
-        );
-      })}
-    </div>
+    </>
   );
 }
