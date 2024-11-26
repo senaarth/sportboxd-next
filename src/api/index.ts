@@ -88,6 +88,9 @@ async function getMatches(
 }
 
 async function getMatchById(matchId: string) {
+  // TODO remover
+  const ratings = await getMatchRatings(matchId, null);
+
   return await api
     .get(`/matches/${matchId}`)
     .then(({ data: match }) => {
@@ -121,16 +124,17 @@ async function getMatchById(matchId: string) {
         ratingsNum: match.ratings_num,
         avgRating: match.avg_rating ? match.avg_rating.toFixed(1) : 0,
         ratingProportion: ratingProportion,
-        ratings: match.ratings.map((rating: RemoteRating) => {
-          const createdAt = new Date(rating.created_at);
-          createdAt.setHours(createdAt.getHours() - 3);
-          return {
-            ...rating,
-            ratingId: rating._id,
-            matchId: rating.match_id,
-            createdAt,
-          };
-        }),
+        ratings:
+          match.ratings?.map((rating: RemoteRating) => {
+            const createdAt = new Date(rating.created_at);
+            createdAt.setHours(createdAt.getHours() - 3);
+            return {
+              ...rating,
+              ratingId: rating._id,
+              matchId: rating.match_id,
+              createdAt,
+            };
+          }) || ratings,
       };
     })
     .catch((err) => {

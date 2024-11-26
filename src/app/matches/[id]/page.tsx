@@ -11,6 +11,8 @@ import { ShareRatingModal } from "@/components/share-rating-modal";
 import { twMerge } from "tailwind-merge";
 import { RatingCard } from "@/components/rating-card";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
+import Link from "next/link";
+import { availableLeagues } from "@/utils/constants";
 
 const RatingProportionComponent = ({
   rating,
@@ -50,7 +52,6 @@ const CrestComponent = ({ league, team }: { league: string; team: string }) => {
 
 export default function MatchPage() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const id = params.id;
   const [isRatingModalOpen, setRatingModalOpen] = useState<boolean>(false);
@@ -70,18 +71,20 @@ export default function MatchPage() {
     () => match?.ratings.find((rating) => rating.ratingId === ratingId),
     [ratingId]
   );
-  console.log(isLoading, error, match);
+  const matchLeague = useMemo(() => {
+    return availableLeagues.find((league) => league.code === match?.league);
+  }, [match]);
+
   if (isLoading || error || !match || !Object.keys(match)?.length)
     return <LoadingScreen />;
 
   return (
     <div className="w-full min-h-svh bg-neutral-950">
-      <div className="w-full flex items-center justify-center px-4 py-6 bg-neutral-900">
+      <div className="w-full flex items-center justify-center px-4 py-6 bg-neutral-900 bg-[url(/img/match_bg.svg)] bg-no-repeat bg-cover">
         <div className="w-full max-w-4xl flex flex-col items-start justify-start gap-4">
-          <button
+          <Link
             className="flex items-center justify-center gap-2 text-base text-neutral-200 hover:brightness-75 transition-all"
-            onClick={() => router.push("/")}
-            type="button"
+            href="/"
           >
             <img
               className="w-5 h-5 p-[2px] -rotate-90"
@@ -89,13 +92,20 @@ export default function MatchPage() {
               alt="ícone de seta para a esquerda"
             />
             Voltar
-          </button>
+          </Link>
           <div className="w-full p-4 grid grid-cols-3">
             <CrestComponent league={match.league} team={match.homeTeam} />
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-sm text-neutral-500 text-center">
-                {formatDateLabel(match.date)}
-              </p>
+            <div className="flex flex-col items-center gap-3">
+              {matchLeague ? (
+                <p className="text-sm font-semibold text-neutral-200 text-center px-3.5 py-1 rounded-full bg-white bg-opacity-[0.1] flex items-center gap-2">
+                  <img
+                    className="w-5 h-5 object-contain"
+                    src={matchLeague.logo}
+                    alt={`${matchLeague.label} logo`}
+                  />
+                  {matchLeague.label}
+                </p>
+              ) : null}
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl text-neutral-200 font-semibold flex items-center gap-2">
                   <span

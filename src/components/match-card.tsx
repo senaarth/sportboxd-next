@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface MatchCardProps {
   matchId: string;
@@ -26,13 +26,10 @@ export function MatchCard({
   league,
   status,
 }: MatchCardProps) {
-  const router = useRouter();
-
   return (
-    <button
+    <Link
       className="w-full rounded-md flex flex-col gap-4 p-4 border border-neutral-800 bg-neutral-900 hover:border-neutral-700 hover:bg-neutral-800"
-      onClick={() => router.push(`/matches/${matchId}`)}
-      type="button"
+      href={`/matches/${matchId}`}
     >
       <div className="w-full flex flex-col gap-4">
         <p className="text-neutral-500 text-xs flex items-center gap-2">
@@ -109,6 +106,6 @@ export function MatchCard({
         </div>
         <p className="text-neutral-500 text-xs">{ratingsNum} avaliações</p>
       </div>
-    </button>
+    </Link>
   );
 }
