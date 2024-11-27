@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -21,6 +21,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { getPreviousMonth, getPreviousWeek } from "@/utils/date";
+import { DatePickerModal } from "@/components/date-modal";
 
 function SelectDateButton({
   label,
@@ -68,8 +69,11 @@ function LeagueSection({
   const {
     data: matchesData,
     error: error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading,
-  } = useQuery<{ matches: Match[]; totalCount: number }>(
+  } = useInfiniteQuery<{ matches: Match[]; totalCount: number }>(
     [
       "matches",
       league.code,
@@ -84,12 +88,19 @@ function LeagueSection({
         league.code,
         pageParam,
         ordering,
-        fromDate || toDate ? undefined : 5
+        5
       );
       return results;
     },
     {
       enabled: league.isAvailable,
+      getNextPageParam: (lastPage, allPages) => {
+        const totalPages = Math.ceil(
+          lastPage.totalCount / lastPage.matches.length
+        );
+        const nextPage = allPages.length + 1;
+        return nextPage <= totalPages ? nextPage : undefined;
+      },
     }
   );
 
@@ -124,27 +135,42 @@ function LeagueSection({
       </button>
       {league.isAvailable && isExpanded && !isLoading ? (
         <div className="w-full max-w-4xl flex flex-col items-center justify-start gap-2">
-          {!matchesData?.matches || matchesData.matches.length === 0 ? (
+          {matchesData?.pages.every((page) => page.matches.length === 0) ? (
             <p className="text-sm text-neutral-200 mt-5 text-center max-w-96">
               Parece que não encontramos partidas nas datas/ligas selecionadas,
               que tal mudar os filtros?
             </p>
           ) : (
             <>
-              <MatchesList
-                key={`matches-league-${league.code}`}
-                matches={matchesData.matches}
-                groupByDate={false}
-              />
+              {matchesData?.pages.map((page) => (
+                <MatchesList
+                  key={`matches-page-${page}`}
+                  matches={page.matches}
+                  groupByDate={ordering.includes("date")}
+                />
+              ))}
               <div className="w-full flex items-center justify-start gap-y-2 gap-x-3 py-2 max-sm:flex-wrap">
-                <button
+                {/* <button
                   className="text-sm hover:underline w-full text-start flex items-center gap-1"
                   onClick={() => router.push(`/leagues/${league.code}`)}
                   type="button"
                 >
                   Ver página da liga
                   <ArrowRight size={16} />
-                </button>
+                </button> */}
+                {hasNextPage ? (
+                  <button
+                    className="text-sm hover:underline w-full text-start flex items-center gap-1"
+                    onClick={() => fetchNextPage()}
+                    type="button"
+                  >
+                    {isFetchingNextPage ? (
+                      <Loading size="sm" color="neutral" />
+                    ) : (
+                      "Ver mais"
+                    )}
+                  </button>
+                ) : null}
               </div>
             </>
           )}
@@ -172,6 +198,8 @@ export default function Home() {
   const localFromDate = localStorage.getItem("sportboxd:selected_from_date");
   const localToDate = localStorage.getItem("sportboxd:selected_to_date");
   const { isAuthenticated, handleLogout, openLoginModal } = useAuth();
+  const [isDatePickerModalOpen, setDatePickerModalOpen] =
+    useState<boolean>(false);
   const [fromDate, selectFromDate] = useState<Date | undefined>(
     localFromDate && !isNaN(new Date(localFromDate).getTime())
       ? new Date(localFromDate)
@@ -309,28 +337,41 @@ export default function Home() {
           </div>
         </div>
         <div className="w-full max-w-4xl flex flex-col items-start gap-2 px-4 pt-2 pb-6">
-          <Select
-            value={ordering}
-            onValueChange={(value) => {
-              if (value !== ordering) setOrdering(value);
-              localStorage.setItem("sportboxd:selected_ordering", value);
-            }}
-          >
-            <SelectTrigger className="w-full gap-2 h-10 bg-neutral-900 border border-neutral-800 focus:ring-0 hover:bg-neutral-800 hover:border-neutral-700">
-              <SelectValue placeholder="Ordernar por" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="-date">Mais recentes</SelectItem>
-              <SelectItem value="date">Mais antigos</SelectItem>
-              <SelectItem value="-ratings_num">Mais relevantes</SelectItem>
-              <SelectItem value="-avg_rating">Melhor avaliados</SelectItem>
-              <SelectItem value="avg_rating">Pior avaliados</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="w-full flex gap-2">
+            <Select
+              value={ordering}
+              onValueChange={(value) => {
+                if (value !== ordering) setOrdering(value);
+                localStorage.setItem("sportboxd:selected_ordering", value);
+              }}
+            >
+              <SelectTrigger className="w-full gap-2 h-10 bg-neutral-900 border border-neutral-800 focus:ring-0 hover:bg-neutral-800 hover:border-neutral-700">
+                <SelectValue placeholder="Ordernar por" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="-date">Mais recentes</SelectItem>
+                <SelectItem value="date">Mais antigos</SelectItem>
+                <SelectItem value="-ratings_num">Mais relevantes</SelectItem>
+                <SelectItem value="-avg_rating">Melhor avaliados</SelectItem>
+                <SelectItem value="avg_rating">Pior avaliados</SelectItem>
+              </SelectContent>
+            </Select>
+            <button
+              className="h-10 w-10 flex items-center justify-center bg-neutral-900 border border-neutral-800 focus:ring-0 hover:bg-neutral-800 hover:border-neutral-700 rounded"
+              onClick={() => setDatePickerModalOpen(true)}
+              type="button"
+            >
+              <img className="h-6 w-6" src="/img/icons/calendar.svg" />
+            </button>
+          </div>
           <div className="w-full flex gap-2">
             <SelectDateButton
               label="Hoje"
-              onSelect={() => selectFromDate(new Date())}
+              onSelect={() => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                selectFromDate(today);
+              }}
               onRemoveSelection={() => selectFromDate(undefined)}
               isSelected={fromDate?.getDate() === new Date().getDate()}
             />
@@ -365,6 +406,19 @@ export default function Home() {
           );
         })}
       </div>
+      <DatePickerModal
+        defaultValue={{
+          startDate: fromDate,
+          endDate: toDate,
+        }}
+        isOpen={isDatePickerModalOpen}
+        onClose={() => setDatePickerModalOpen(false)}
+        onSubmit={(startDate, endDate) => {
+          if (startDate && startDate !== fromDate) selectFromDate(startDate);
+          if (endDate && endDate !== toDate) selectToDate(endDate);
+          setDatePickerModalOpen(false);
+        }}
+      />
     </>
   );
 }

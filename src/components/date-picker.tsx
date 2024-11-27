@@ -94,11 +94,16 @@ const customTheme: CustomFlowbiteTheme["datepicker"] = {
 };
 
 interface DatePickerProps {
+  label: string;
   defaultValue?: Date;
   onDatePick: (date?: Date) => void;
 }
 
-export function DatePicker({ defaultValue, onDatePick }: DatePickerProps) {
+export function DatePicker({
+  label,
+  defaultValue,
+  onDatePick,
+}: DatePickerProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [selectedDate, selectDate] = useState<Date | undefined>(defaultValue);
 
@@ -108,12 +113,12 @@ export function DatePicker({ defaultValue, onDatePick }: DatePickerProps) {
     <div className="w-full flex flex-col">
       <div>
         <button
-          className="w-full h-10 flex items-center justify-center gap-2 border border-neutral-800 bg-neutral-900 rounded-md hover:bg-neutral-800 hover:border-neutral-700"
+          className="w-full h-10 pl-4 flex items-center justify-start gap-2 border border-neutral-800 bg-neutral-900 rounded-md hover:bg-neutral-800 hover:border-neutral-700"
           onClick={() => setIsExpanded(!isExpanded)}
           type="button"
         >
           <p className="text-neutral-200 text-sm">
-            {selectedDate ? formatDateLabel(selectedDate) : "Selecionar Data"}
+            {selectedDate ? formatDateLabel(selectedDate) : label}
           </p>
           <img
             alt="Ícone de seta indicando que o botão expande a visualização"
