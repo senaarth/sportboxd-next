@@ -67,8 +67,11 @@ export default function MatchPage() {
     return await getMatchById(id);
   });
   const sharedRating = useMemo(
-    () => match?.ratings.find((rating) => rating.ratingId === ratingId),
-    [ratingId]
+    () =>
+      match?.ratings.find(
+        (rating) => rating.ratingId === ratingId || rating._id === ratingId
+      ),
+    [match, ratingId]
   );
   const matchLeague = useMemo(() => {
     return availableLeagues.find((league) => league.code === match?.league);

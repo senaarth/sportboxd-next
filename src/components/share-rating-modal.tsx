@@ -70,7 +70,8 @@ export function ShareRatingModal({
   match,
 }: ShareRatingModalProps) {
   const shareUrl = useMemo(
-    () => `sportboxd.com/matches/${match.matchId}?rating_id=${rating.ratingId}`,
+    () =>
+      `sportboxd.com/partidas/${match.matchId}?rating_id=${rating.ratingId}`,
     [rating, match]
   );
 

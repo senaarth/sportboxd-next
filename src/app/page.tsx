@@ -281,7 +281,7 @@ export default function Home() {
                     index === 0 ? "ml-4" : "",
                     index === mostCommentedData?.matches.length - 1 ? "mr-4" : 0
                   )}
-                  href={`/matches/${match.matchId}`}
+                  href={`/partidas/${match.matchId}`}
                 >
                   <div className="flex items-center justify-start gap-2">
                     <img
@@ -298,7 +298,7 @@ export default function Home() {
                     </p>
                     <p
                       className={twMerge(
-                        "text-xs",
+                        "text-xs ml-auto",
                         match.homeScore > match.awayScore
                           ? "text-neutral-200"
                           : "text-neutral-500"
@@ -322,7 +322,7 @@ export default function Home() {
                     </p>
                     <p
                       className={twMerge(
-                        "text-xs",
+                        "text-xs ml-auto",
                         match.awayScore > match.homeScore
                           ? "text-neutral-200"
                           : "text-neutral-500"

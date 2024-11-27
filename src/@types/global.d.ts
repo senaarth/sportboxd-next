@@ -30,17 +30,6 @@ declare global {
     ratings: Rating[];
   };
 
-  type Rating = {
-    ratingId: string;
-    createdAt: Date;
-    matchId: string;
-    title: string;
-    author: string;
-    comment: string;
-    rating: number;
-    likes: number;
-  };
-
   type RemoteMatch = {
     _id: string;
     date: string;
@@ -72,4 +61,15 @@ declare global {
     rating: number;
     likes: number;
   };
+
+  type Rating = {
+    ratingId: string;
+    createdAt: Date;
+    matchId: string;
+    title: string;
+    author: string;
+    comment: string;
+    rating: number;
+    likes: number;
+  } & RemoteRating;
 }

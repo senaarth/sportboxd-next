@@ -82,7 +82,7 @@ async function getMatches(
     })
     .catch((error) => {
       console.log("error", error);
-      // throw new Error("Erro ao buscar as partidas");
+      // throw new Error("Erro ao buscar as matches");
       return { matches: [], totalCount: 0 };
     });
 }
@@ -179,7 +179,7 @@ async function getMatchRatings(matchId: string, ratingId: string | null) {
       });
     })
     .catch(() => {
-      // throw new Error("Erro ao buscar as partidas");
+      // throw new Error("Erro ao buscar as matches");
       return [];
     });
 }
