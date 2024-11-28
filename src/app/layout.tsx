@@ -44,6 +44,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        <meta name="google-adsense-account" content="ca-pub-2303783235779047" />
       </head>
       <body className="antialiased font-inter flex flex-col items-center justify-start min-h-svh bg-neutral-950">
         <QueryClientProvider client={queryClient}>
