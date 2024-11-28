@@ -357,7 +357,7 @@ export default function Home() {
               </SelectContent>
             </Select>
             <button
-              className="h-10 w-10 flex items-center justify-center bg-neutral-900 border border-neutral-800 focus:ring-0 hover:bg-neutral-800 hover:border-neutral-700 rounded"
+              className="h-10 w-10 flex items-center justify-center bg-neutral-900 border border-neutral-800 focus:ring-0 hover:bg-neutral-800 hover:border-neutral-700 rounded-md"
               onClick={() => setDatePickerModalOpen(true)}
               type="button"
             >

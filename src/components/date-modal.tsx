@@ -1,6 +1,5 @@
 import { CustomFlowbiteTheme, Modal } from "flowbite-react";
 import { useMutation } from "react-query";
-import { Loading } from "@/components/loading";
 import { DatePicker } from "./date-picker";
 import { useEffect, useState } from "react";
 

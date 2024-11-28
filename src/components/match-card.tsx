@@ -28,7 +28,7 @@ export function MatchCard({
 }: MatchCardProps) {
   return (
     <Link
-      className="w-full rounded-md flex flex-col gap-4 p-4 border border-neutral-800 bg-neutral-900 hover:border-neutral-700 hover:bg-neutral-800  bg-[url(/img/match_card_bg.svg)] bg-cover bg-no-repeat"
+      className="w-full rounded-md flex flex-col gap-4 p-4 border border-neutral-800 bg-neutral-900 hover:border-neutral-700 hover:bg-neutral-800  max-w-md:bg-[url(/img/match_card_bg.svg)] max-w-md:bg-cover max-w-md:bg-no-repeat"
       href={`/partidas/${matchId}`}
     >
       <div className="w-full flex flex-col gap-4">
