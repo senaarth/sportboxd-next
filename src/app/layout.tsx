@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/auth";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import "@/app/globals.css";
+import Script from "next/script";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,11 +38,12 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
           rel="stylesheet"
         />
-        <script
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2303783235779047"
           crossOrigin="anonymous"
-        ></script>
+          strategy="afterInteractive"
+        />
       </head>
       <body className="antialiased font-inter flex flex-col items-center justify-start min-h-svh bg-neutral-950">
         <QueryClientProvider client={queryClient}>
