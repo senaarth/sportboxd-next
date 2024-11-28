@@ -1,6 +1,7 @@
 import { CustomFlowbiteTheme, Modal } from "flowbite-react";
 import { useMemo } from "react";
 import { Stars } from "@/components/stars";
+import { useToast } from "@/hooks/use-toast";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -69,6 +70,7 @@ export function ShareRatingModal({
   rating,
   match,
 }: ShareRatingModalProps) {
+  const { toast } = useToast();
   const shareUrl = useMemo(
     () =>
       `sportboxd.com/partidas/${match.matchId}?rating_id=${rating.ratingId}`,
@@ -187,10 +189,17 @@ export function ShareRatingModal({
             <button
               className="w-full rounded-lg bg-neutral-800 border border-neutral-700 p-3.5 flex flex-col items-start gap-1"
               onClick={() => {
-                navigator.share({
-                  url: `https://${shareUrl}`,
-                  text: `Veja esta resenha de ${match.homeTeam} e ${match.awayTeam}`,
-                });
+                const url = `https://${shareUrl}`;
+                try {
+                  navigator.share({
+                    url: url,
+                    text: `Veja esta resenha de ${match.homeTeam} e ${match.awayTeam}`,
+                  });
+                } catch {
+                  navigator.clipboard.writeText(url);
+                  toast({ title: "Link copiado com sucesso!" });
+                  onClose();
+                }
               }}
               type="button"
             >
