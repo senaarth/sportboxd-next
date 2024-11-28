@@ -373,14 +373,17 @@ export default function Home() {
                 selectFromDate(today);
               }}
               onRemoveSelection={() => selectFromDate(undefined)}
-              isSelected={fromDate?.getDate() === new Date().getDate()}
+              isSelected={
+                fromDate?.toDateString() === new Date().toDateString()
+              }
             />
             <SelectDateButton
               label="Última semana"
               onSelect={() => selectFromDate(getPreviousWeek(new Date()))}
               onRemoveSelection={() => selectFromDate(undefined)}
               isSelected={
-                fromDate?.getDate() === getPreviousWeek(new Date()).getDate()
+                fromDate?.toDateString() ===
+                getPreviousWeek(new Date()).toDateString()
               }
             />
             <SelectDateButton
@@ -388,7 +391,8 @@ export default function Home() {
               onSelect={() => selectFromDate(getPreviousMonth(new Date()))}
               onRemoveSelection={() => selectFromDate(undefined)}
               isSelected={
-                fromDate?.getDate() === getPreviousMonth(new Date()).getDate()
+                fromDate?.toDateString() ===
+                getPreviousMonth(new Date()).toDateString()
               }
             />
           </div>
