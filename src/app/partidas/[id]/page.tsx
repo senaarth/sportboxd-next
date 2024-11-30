@@ -11,7 +11,8 @@ import { twMerge } from "tailwind-merge";
 import { RatingCard } from "@/components/rating-card";
 import { useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
-import { availableLeagues } from "@/utils/constants";
+import { availableLeagues, matchStatusLabelMap } from "@/utils/constants";
+import { formatDateLabel } from "@/utils/date";
 
 const RatingProportionComponent = ({
   rating,
@@ -154,18 +155,12 @@ export default function MatchPage() {
                   </p>
                 </div>
                 <p className="text-xs text-neutral-200 flex items-center gap-2 ">
-                  {match.status === "FINISHED" ||
-                  match.matchId === "673a106c1b576d2329fee225" ? (
-                    "Encerrado"
+                  {match.status !== "IN_PLAY" ? (
+                    `${matchStatusLabelMap[match.status]} - ${formatDateLabel(match.date)}`
                   ) : (
                     <>
-                      Em andamento
-                      <span
-                        className={twMerge(
-                          "w-1 h-1 rounded-full bg-lime-400",
-                          "animate-ping"
-                        )}
-                      />
+                      <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
+                      {matchStatusLabelMap[match.status]}
                     </>
                   )}
                 </p>

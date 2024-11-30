@@ -34,7 +34,9 @@ function MatchesByDateList({ matches }: MatchesByDateListProps) {
         <p className="mb-3 mt-2">{date}</p>
         <div className="w-full flex flex-col gap-2">
           {matchesByDate[date].map((match) => {
-            return <MatchCard key={match.matchId} {...match} />;
+            return (
+              <MatchCard key={match.matchId} showDate={false} {...match} />
+            );
           })}
         </div>
       </div>

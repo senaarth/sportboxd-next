@@ -2,6 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
 import Link from "next/link";
 import { matchStatusLabelMap } from "@/utils/constants";
+import { formatDateLabel } from "@/utils/date";
 
 interface MatchCardProps {
   matchId: string;
@@ -14,6 +15,7 @@ interface MatchCardProps {
   date: Date;
   league: string;
   status: string;
+  showDate?: boolean;
 }
 
 export function MatchCard({
@@ -26,6 +28,8 @@ export function MatchCard({
   ratingsNum,
   league,
   status,
+  date,
+  showDate = true,
 }: MatchCardProps) {
   return (
     <Link
@@ -33,16 +37,20 @@ export function MatchCard({
       href={`/partidas/${matchId}`}
     >
       <div className="w-full flex flex-col gap-4">
-        <p className="text-neutral-500 text-xs flex items-center gap-2">
-          {status !== "IN_PLAY" ? (
-            matchStatusLabelMap[status]
-          ) : (
-            <>
-              <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
-              {matchStatusLabelMap[status]}
-            </>
-          )}
-        </p>
+        {status === "FINISHED" && showDate ? (
+          <p className="text-xs text-neutral-200">{formatDateLabel(date)}</p>
+        ) : (
+          <p className="text-neutral-500 text-xs flex items-center gap-2">
+            {status !== "IN_PLAY" ? (
+              matchStatusLabelMap[status]
+            ) : (
+              <>
+                <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
+                {matchStatusLabelMap[status]}
+              </>
+            )}
+          </p>
+        )}
         <div className="w-full flex flex-row items-center justify-start gap-1.5">
           <img
             className="h-8 w-8 object-contain p-0.5"
