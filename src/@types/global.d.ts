@@ -59,7 +59,7 @@ declare global {
     author: string;
     comment: string;
     rating: number;
-    likes: number;
+    likes: string[];
   };
 
   type Rating = {
@@ -70,6 +70,6 @@ declare global {
     author: string;
     comment: string;
     rating: number;
-    likes: number;
+    likes: string[];
   } & RemoteRating;
 }
