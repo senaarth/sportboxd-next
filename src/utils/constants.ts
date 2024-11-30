@@ -37,4 +37,10 @@ const availableLeagues: League[] = [
   },
 ];
 
-export { availableLeagues };
+const matchStatusLabelMap: Record<string, string> = {
+  FINISHED: "Encerrado",
+  IN_PLAY: "Ao vivo",
+  PRE_GAME: "Pré-jogo",
+};
+
+export { availableLeagues, matchStatusLabelMap };

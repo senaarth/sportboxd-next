@@ -1,6 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
 import Link from "next/link";
+import { matchStatusLabelMap } from "@/utils/constants";
 
 interface MatchCardProps {
   matchId: string;
@@ -33,12 +34,12 @@ export function MatchCard({
     >
       <div className="w-full flex flex-col gap-4">
         <p className="text-neutral-500 text-xs flex items-center gap-2">
-          {status === "FINISHED" || matchId === "673a106c1b576d2329fee225" ? (
-            "Encerrado"
+          {status !== "IN_PLAY" ? (
+            matchStatusLabelMap[status]
           ) : (
             <>
               <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
-              Ao vivo
+              {matchStatusLabelMap[status]}
             </>
           )}
         </p>
