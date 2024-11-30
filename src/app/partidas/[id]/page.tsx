@@ -174,7 +174,7 @@ export default function MatchPage() {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-4xl flex flex-col items-center justify-start p-4 mx-auto">
+      <div className="w-full max-w-4xl flex flex-col items-center justify-start p-4 pb-12 mx-auto">
         <div className="w-full flex items-center justify-between py-2">
           <p className="text-sm text-neutral-200">Toque para avaliar</p>
           <Stars
@@ -232,7 +232,6 @@ export default function MatchPage() {
                     rating={sharedRating}
                     setRatingToShare={setRatingToShare}
                   />
-                  <span className="w-full h-[1px] bg-neutral-800 my-4" />
                 </>
               ) : null}
               {match.ratings.map((rating) =>

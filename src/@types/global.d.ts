@@ -7,6 +7,7 @@ declare global {
     label: string;
     logo: string;
     isAvailable: boolean;
+    isRecentlyAdded?: boolean;
   };
 
   type Match = {
@@ -51,6 +52,13 @@ declare global {
     ratings: RemoteRating[];
   };
 
+  type RatingReply = {
+    author: string;
+    comment: string;
+    created_at: string;
+    _id: string;
+  };
+
   type RemoteRating = {
     _id: string;
     created_at: string;
@@ -59,7 +67,8 @@ declare global {
     author: string;
     comment: string;
     rating: number;
-    likes: number;
+    likes: string[];
+    replies: RatingReply[];
   };
 
   type Rating = {
@@ -70,6 +79,6 @@ declare global {
     author: string;
     comment: string;
     rating: number;
-    likes: number;
+    likes: string[];
   } & RemoteRating;
 }

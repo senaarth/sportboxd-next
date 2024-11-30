@@ -1,5 +1,13 @@
 const availableLeagues: League[] = [
   {
+    code: "LIB",
+    sport: "soccer",
+    label: "Copa Libertadores",
+    logo: "/img/leagues/liberta.svg",
+    isAvailable: true,
+    isRecentlyAdded: true,
+  },
+  {
     code: "BSA",
     sport: "soccer",
     label: "Brasileirão - Série A",

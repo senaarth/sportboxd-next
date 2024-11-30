@@ -88,9 +88,6 @@ async function getMatches(
 }
 
 async function getMatchById(matchId: string) {
-  // TODO remover
-  const ratings = await getMatchRatings(matchId, null);
-
   return await api
     .get(`/matches/${matchId}`)
     .then(({ data: match }) => {
@@ -124,17 +121,16 @@ async function getMatchById(matchId: string) {
         ratingsNum: match.ratings_num,
         avgRating: match.avg_rating ? match.avg_rating.toFixed(1) : 0,
         ratingProportion: ratingProportion,
-        ratings:
-          match.ratings?.map((rating: RemoteRating) => {
-            const createdAt = new Date(rating.created_at);
-            createdAt.setHours(createdAt.getHours() - 3);
-            return {
-              ...rating,
-              ratingId: rating._id,
-              matchId: rating.match_id,
-              createdAt,
-            };
-          }) || ratings,
+        ratings: match.ratings?.map((rating: RemoteRating) => {
+          const createdAt = new Date(rating.created_at);
+          createdAt.setHours(createdAt.getHours() - 3);
+          return {
+            ...rating,
+            ratingId: rating._id,
+            matchId: rating.match_id,
+            createdAt,
+          };
+        }),
       };
     })
     .catch((err) => {
@@ -184,6 +180,26 @@ async function getMatchRatings(matchId: string, ratingId: string | null) {
     });
 }
 
+async function getRatingById(ratingId: string) {
+  return await api
+    .get(`/ratings/by-id/${ratingId}`)
+    .then(({ data: rating }) => {
+      const createdAt = new Date(rating.created_at);
+      createdAt.setHours(createdAt.getHours() - 3);
+      return {
+        ...rating,
+        ratingId: rating._id,
+        matchId: rating.match_id,
+        createdAt,
+      };
+    })
+    .catch((err) => {
+      console.log(err);
+      // throw new Error("Erro ao buscar partida");
+      return {};
+    });
+}
+
 async function postRating(data: {
   title: string;
   rating: number;
@@ -224,6 +240,30 @@ async function createRatingPreview(
   );
 }
 
+async function likeRating(ratingId: string, option: string) {
+  try {
+    await api.put(`/ratings/interactions/${ratingId}?option=${option}`);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function postRatingReply(
+  matchId: string,
+  comment: string,
+  ratingId: string
+) {
+  await api
+    .post(`/replies/`, {
+      match_id: matchId,
+      comment,
+      original_rating_id: ratingId,
+    })
+    .catch(() => {
+      throw new Error("Erro ao publicar comentário");
+    });
+}
+
 export {
   createMatchPreview,
   createRatingPreview,
@@ -232,4 +272,7 @@ export {
   getMatchRatings,
   postRating,
   updateRatingLikes,
+  likeRating,
+  getRatingById,
+  postRatingReply,
 };

@@ -5,7 +5,9 @@ import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
 import { useMutation } from "react-query";
 import { Loading } from "@/components/loading";
-import { createRatingPreview } from "@/api";
+import { createRatingPreview, likeRating } from "@/api";
+import { useAuth } from "@/contexts/auth";
+import Link from "next/link";
 
 export const RatingCard = ({
   match,
@@ -16,15 +18,34 @@ export const RatingCard = ({
   rating: Rating;
   setRatingToShare: Dispatch<SetStateAction<Rating | null>>;
 }) => {
+  const { isAuthenticated, openLoginModal, user } = useAuth();
+  const [likes, setLikes] = useState<Array<string>>(rating.likes);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
-  const mutation = useMutation({
+  const { mutate: requestPreviewCreation } = useMutation({
     mutationFn: async () => {
       await createRatingPreview(match, rating);
     },
     retry: true,
   });
+  const { mutate: requestRatingLike, isLoading: isLikeLoading } = useMutation({
+    mutationFn: async (option: string) => {
+      await likeRating(rating.ratingId, option);
+
+      if (option === "likes") addUserIdToLikes();
+      else removeUserIdFromLikes();
+    },
+  });
   const textRef = useRef<HTMLParagraphElement>(null);
+
+  const addUserIdToLikes = () => {
+    if (user?.uid && !likes.includes(user.uid)) setLikes([...likes, user.uid]);
+  };
+
+  const removeUserIdFromLikes = () => {
+    if (user?.uid && likes.includes(user.uid))
+      setLikes(likes.filter((id) => id !== user.uid));
+  };
 
   const checkOverflow = () => {
     if (textRef.current) {
@@ -49,22 +70,22 @@ export const RatingCard = ({
       key={`rating-${rating.ratingId}`}
       className="w-full bg-neutral-900 border border-neutral-800 rounded-md text-neutral-200 p-4"
     >
-      <div className="w-full flex items-center justify-between gap-2">
-        <div className="flex flex-col items-start justify-start gap-0.5">
-          <p className="text-base font-semibold line-clamp-2">{rating.title}</p>
-          <Stars color="lime" number={rating.rating} size="xs" />
-        </div>
-        <div className="flex flex-col items-end justify-center">
-          <p className="text-xs font-semibold text-right">{rating.author}</p>
-          <p className="text-xs text-neutral-600">
-            {formatDateLabel(rating.createdAt)}
+      <div className="w-full flex items-start justify-between">
+        <div className="flex flex-col items-start justify-start gap-1">
+          <p className="text-xs font-semibold leading-[1.2]">{rating.author}</p>
+          <p className="text-sm font-semibold leading-[1.2] line-clamp-2">
+            {rating.title}
           </p>
         </div>
+        <p className="text-xs text-neutral-600">
+          {formatDateLabel(rating.createdAt)}
+        </p>
       </div>
+      <Stars className="mt-4" color="lime" number={rating.rating} size="xs" />
       <p
         ref={textRef}
         className={twMerge(
-          "text-sm mt-4 transition-all",
+          "text-sm mt-2 transition-all",
           isExpanded ? "" : "line-clamp-3"
         )}
       >
@@ -85,35 +106,59 @@ export const RatingCard = ({
           {isExpanded ? "Ver menos" : "Ver mais"}
         </button>
       )}
-      <div className="w-full flex items-center justify-between mt-2">
-        <div className="flex items-center gap-1.5">
-          {/* <button className="mr-0.5" type="button">
-            <img
-              className="w-4 h-4"
-              src="/img/icons/thumbs_up_filled.svg"
-              alt="ícone de compartilhar"
-            />
+      <div className="w-full flex items-center justify-between mt-4">
+        <div className="flex items-center gap-1">
+          <button
+            className="mr-0.5"
+            type="button"
+            onClick={() => {
+              if (!isAuthenticated || !user?.uid) {
+                openLoginModal();
+                return;
+              }
+
+              if (likes.includes(user.uid)) {
+                requestRatingLike("-likes");
+                return;
+              }
+
+              requestRatingLike("likes");
+            }}
+          >
+            {!!user && likes.includes(user?.uid) ? (
+              <img
+                className="w-4 h-4"
+                src="/img/icons/thumbs_up_filled.svg"
+                alt="ícone de curtida"
+              />
+            ) : (
+              <img
+                className="w-4 h-4 rotate-180"
+                src="/img/icons/thumbs_down_outline.svg"
+                alt="ícone de curtida"
+              />
+            )}
           </button>
-          <p className="text-xs text-neutral-600">
-            {mutation.isLoading ? (
+          <p className="text-sm text-neutral-600">
+            {isLikeLoading ? (
               <Loading size="xs" color="neutral" />
             ) : (
-              rating.likes
+              likes.length
             )}
           </p>
-          <button type="button">
-            <img
-              className="w-5 h-5"
-              src="/img/icons/thumbs_down_outline.svg"
-              alt="ícone de compartilhar"
-            />
-          </button> */}
         </div>
+        <span className="h-5 w-[1px] bg-neutral-700 mx-2" />
+        <Link
+          className="font-semibold text-sm text-neutral-400"
+          href={`/avaliacoes/${match.matchId}/${rating.ratingId}`}
+        >
+          Responder
+        </Link>
         <button
           className="p-1 rounded hover:bg-neutral-800 ml-auto"
           onClick={() => {
             setRatingToShare(rating);
-            mutation.mutate();
+            requestPreviewCreation();
           }}
           type="button"
         >

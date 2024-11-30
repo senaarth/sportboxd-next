@@ -113,14 +113,21 @@ function LeagueSection({
         }}
         className="w-full flex items-center justify-between"
       >
-        <p className="text-neutral-200 text-base font-bold flex items-center gap-2">
-          <img
-            className="w-8 h-8 rounded-full p-1 border border-neutral-600"
-            src={league.logo}
-            alt={`logo ${league.label}`}
-          />
-          {league.label}
-        </p>
+        <div className="w-fit flex items-center gap-2">
+          <p className="text-neutral-200 text-base font-bold flex items-center gap-2">
+            <img
+              className="w-8 h-8 rounded-full p-1 border border-neutral-600"
+              src={league.logo}
+              alt={`logo ${league.label}`}
+            />
+            {league.label}
+          </p>
+          {league.isRecentlyAdded ? (
+            <p className="h-5 px-2.5 bg-lime-500 rounded-md text-xs mr-auto leading-5 text-neutral-950">
+              Novo
+            </p>
+          ) : null}
+        </div>
         {isLoading ? (
           <Loading size="xs" color="neutral" />
         ) : (
