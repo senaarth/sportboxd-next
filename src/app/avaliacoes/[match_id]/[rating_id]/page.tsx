@@ -28,8 +28,8 @@ const commentFormSchema = z.object({
 type CommentFormSchema = z.infer<typeof commentFormSchema>;
 
 export default function RatingPage() {
-  const params = useParams<{ id: string; rating_id: string }>();
-  const matchId = params.id;
+  const params = useParams<{ match_id: string; rating_id: string }>();
+  const matchId = params.match_id;
   const id = params.rating_id;
   const { user, isAuthenticated, openLoginModal } = useAuth();
   const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);

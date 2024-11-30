@@ -150,7 +150,7 @@ export const RatingCard = ({
         <span className="h-5 w-[1px] bg-neutral-700 mx-2" />
         <Link
           className="font-semibold text-sm text-neutral-400"
-          href={`/partidas/${match.matchId}/avaliacoes/${rating.ratingId}`}
+          href={`/avaliacoes/${match.matchId}/${rating.ratingId}`}
         >
           Responder
         </Link>
