@@ -1,5 +1,5 @@
 import { formatDateLabel } from "@/utils/date";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageSquareText } from "lucide-react";
 import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
@@ -8,6 +8,7 @@ import { Loading } from "@/components/loading";
 import { createRatingPreview, likeRating } from "@/api";
 import { useAuth } from "@/contexts/auth";
 import Link from "next/link";
+import { queryClient } from "@/app/layout";
 
 export const RatingCard = ({
   match,
@@ -133,8 +134,8 @@ export const RatingCard = ({
               />
             ) : (
               <img
-                className="w-4 h-4 rotate-180"
-                src="/img/icons/thumbs_down_outline.svg"
+                className="w-4 h-4"
+                src="/img/icons/thumbs_up_outline.svg"
                 alt="ícone de curtida"
               />
             )}
@@ -147,10 +148,27 @@ export const RatingCard = ({
             )}
           </p>
         </div>
+        <Link
+          href={`/avaliacoes/${match.matchId}/${rating.ratingId}`}
+          className="flex items-center gap-1 ml-2"
+          onClick={() => {
+            queryClient.refetchQueries(["match", match.matchId]);
+            queryClient.refetchQueries(["rating", rating.ratingId]);
+          }}
+        >
+          <MessageSquareText size={16} />
+          <p className="text-sm text-neutral-600">
+            {rating.replies?.length || 0}
+          </p>
+        </Link>
         <span className="h-5 w-[1px] bg-neutral-700 mx-2" />
         <Link
           className="font-semibold text-sm text-neutral-400"
           href={`/avaliacoes/${match.matchId}/${rating.ratingId}`}
+          onClick={() => {
+            queryClient.refetchQueries(["match", match.matchId]);
+            queryClient.refetchQueries(["rating", rating.ratingId]);
+          }}
         >
           Responder
         </Link>

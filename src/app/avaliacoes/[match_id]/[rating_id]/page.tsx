@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ShareRatingModal } from "@/components/share-rating-modal";
-import { useSearchParams, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   getMatchById,
@@ -20,6 +20,7 @@ import { Input } from "@/components/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { queryClient } from "@/app/layout";
 
 const commentFormSchema = z.object({
   comment: z.string().min(1, "Campo obrigatório"),
@@ -33,12 +34,12 @@ export default function RatingPage() {
   const id = params.rating_id;
   const { user, isAuthenticated, openLoginModal } = useAuth();
   const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);
-  const [likes, setLikes] = useState<string[]>([]);
   const [replies, setReplies] = useState<RatingReply[]>([]);
   const {
     data: rating,
     error,
     isLoading,
+    isRefetching: isRefetchingRating,
   } = useQuery<Rating>(["rating", id], async () => {
     if (!id) return {};
     return await getRatingById(id);
@@ -47,6 +48,7 @@ export default function RatingPage() {
     data: match,
     error: matchError,
     isLoading: isMatchLoading,
+    isRefetching: isRefetchingMatch,
   } = useQuery<Match>(["match", matchId], async () => {
     if (!id) return {};
     return await getMatchById(matchId);
@@ -55,9 +57,10 @@ export default function RatingPage() {
     mutationFn: async (option: string) => {
       if (!rating) return;
       await likeRating(rating.ratingId, option);
-
-      if (option === "likes") addUserIdToLikes();
-      else removeUserIdFromLikes();
+    },
+    onSuccess: () => {
+      if (match) queryClient.refetchQueries(["match", match.matchId]);
+      if (rating) queryClient.refetchQueries(["rating", rating.ratingId]);
     },
   });
   const { mutate: submitForm, isLoading: isSubmittingComment } = useMutation({
@@ -87,20 +90,6 @@ export default function RatingPage() {
   } = useForm<CommentFormSchema>({
     resolver: zodResolver(commentFormSchema),
   });
-
-  const addUserIdToLikes = () => {
-    if (user?.uid && !likes.includes(user.uid)) setLikes([...likes, user.uid]);
-  };
-
-  const removeUserIdFromLikes = () => {
-    if (user?.uid && likes.includes(user.uid))
-      setLikes(likes.filter((id) => id !== user.uid));
-  };
-
-  useEffect(() => {
-    if (rating?.likes) setLikes(rating.likes);
-    if (rating?.replies) setReplies(rating.replies);
-  }, [rating]);
 
   if (
     isLoading ||
@@ -174,7 +163,7 @@ export default function RatingPage() {
                   return;
                 }
 
-                if (likes.includes(user.uid)) {
+                if (rating.likes.includes(user.uid)) {
                   requestRatingLike("-likes");
                   return;
                 }
@@ -182,7 +171,7 @@ export default function RatingPage() {
                 requestRatingLike("likes");
               }}
             >
-              {!!user && likes.includes(user?.uid) ? (
+              {!!user && rating.likes.includes(user?.uid) ? (
                 <img
                   className="w-5 h-5"
                   src="/img/icons/thumbs_up_filled.svg"
@@ -197,15 +186,15 @@ export default function RatingPage() {
               )}
             </button>
             <p className="text-sm text-neutral-600">
-              {isLikeLoading ? (
+              {isLikeLoading || isRefetchingMatch || isRefetchingRating ? (
                 <Loading size="xs" color="neutral" />
               ) : (
-                likes.length
+                rating.likes.length
               )}
             </p>
           </div>
           <p className="ml-auto text-base text-neutral-400 font-semibold">
-            {replies.length} comentários
+            {replies.length} Respostas
           </p>
         </div>
         <form

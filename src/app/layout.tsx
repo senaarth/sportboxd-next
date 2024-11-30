@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import "@/app/globals.css";
 import Script from "next/script";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       cacheTime: 1000 * 60 * 10,
