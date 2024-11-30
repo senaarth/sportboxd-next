@@ -51,6 +51,13 @@ declare global {
     ratings: RemoteRating[];
   };
 
+  type RatingReply = {
+    author: string;
+    comment: string;
+    created_at: string;
+    _id: string;
+  };
+
   type RemoteRating = {
     _id: string;
     created_at: string;
@@ -60,6 +67,7 @@ declare global {
     comment: string;
     rating: number;
     likes: string[];
+    replies: RatingReply[];
   };
 
   type Rating = {

@@ -23,8 +23,8 @@ const sizeVariants = {
     size: "w-2.5 h-2.5",
   },
   sm: {
-    gap: "",
-    size: "",
+    gap: "gap-0.5",
+    size: "w-4 h-4",
   },
   base: {
     gap: "",
@@ -37,18 +37,31 @@ const sizeVariants = {
 };
 
 interface StarsProps {
+  className?: string;
   color: "lime" | "neutral" | "neutral-dark";
   number: number;
   onStarClick?: (rating: number) => void;
   size: "2xs" | "xs" | "sm" | "base" | "lg";
 }
 
-export function Stars({ color, number, onStarClick, size }: StarsProps) {
+export function Stars({
+  className,
+  color,
+  number,
+  onStarClick,
+  size,
+}: StarsProps) {
   const [starsToHighlightNum, setStarsToHighlightNum] =
     useState<number>(number);
 
   return (
-    <div className={twMerge("flex items-center", sizeVariants[size].gap)}>
+    <div
+      className={twMerge(
+        "flex items-center",
+        sizeVariants[size].gap,
+        className
+      )}
+    >
       {[0, 1, 2, 3, 4].map((item) => {
         return (
           <div

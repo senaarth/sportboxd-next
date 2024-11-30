@@ -180,6 +180,26 @@ async function getMatchRatings(matchId: string, ratingId: string | null) {
     });
 }
 
+async function getRatingById(ratingId: string) {
+  return await api
+    .get(`/ratings/by-id/${ratingId}`)
+    .then(({ data: rating }) => {
+      const createdAt = new Date(rating.created_at);
+      createdAt.setHours(createdAt.getHours() - 3);
+      return {
+        ...rating,
+        ratingId: rating._id,
+        matchId: rating.match_id,
+        createdAt,
+      };
+    })
+    .catch((err) => {
+      console.log(err);
+      // throw new Error("Erro ao buscar partida");
+      return {};
+    });
+}
+
 async function postRating(data: {
   title: string;
   rating: number;
@@ -228,6 +248,22 @@ async function likeRating(ratingId: string, option: string) {
   }
 }
 
+async function postRatingReply(
+  matchId: string,
+  comment: string,
+  ratingId: string
+) {
+  await api
+    .post(`/replies/`, {
+      match_id: matchId,
+      comment,
+      original_rating_id: ratingId,
+    })
+    .catch(() => {
+      throw new Error("Erro ao publicar comentário");
+    });
+}
+
 export {
   createMatchPreview,
   createRatingPreview,
@@ -237,4 +273,6 @@ export {
   postRating,
   updateRatingLikes,
   likeRating,
+  getRatingById,
+  postRatingReply,
 };
