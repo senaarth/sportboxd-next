@@ -293,7 +293,7 @@ export default function Home() {
                   <div className="flex items-center justify-start gap-2">
                     <img
                       className="w-4 h-4 object-contain"
-                      src={`/img/crests/${match.league}/${match.homeTeam}.png`}
+                      src={`/img/crests/${match.homeTeam}.png`}
                       alt={`escudo do time da casa, ${match.homeTeam}`}
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
@@ -317,7 +317,7 @@ export default function Home() {
                   <div className="flex items-center justify-start gap-2">
                     <img
                       className="w-4 h-4 object-contain"
-                      src={`/img/crests/${match.league}/${match.awayTeam}.png`}
+                      src={`/img/crests/${match.awayTeam}.png`}
                       alt={`escudo do time visitante, ${match.awayTeam}`}
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =

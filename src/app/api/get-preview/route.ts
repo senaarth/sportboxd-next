@@ -48,9 +48,9 @@ const getHTMLTemplate = (
                   <p class="text-sm leading-[0.875rem] text-neutral-200 mb-1">${ratingTitle}</p>
                 </div>
                 <div class="flex items-center gap-1">
-                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/crests/${league}/${homeTeam}.png">
+                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/${league}/${homeTeam}.png">
                   <p class="text-sm text-neutral-200">${homeScore} - ${awayScore}</p>
-                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/crests/${league}/${awayTeam}.png">
+                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/${league}/${awayTeam}.png">
                 </div>
             </div>
             <p class="text-lg text-neutral-200 font-light line-clamp-2">${ratingComment}</p>
@@ -67,9 +67,9 @@ const getHTMLTemplate = (
       </head>
       <body class="w-[768px] h-[768px] flex items-center justify-center bg-cover bg-[url(https://sportboxd.com/img/preview_bg.svg)]">
         <div class="w-[768px] h-[768px] flex items-center justify-center gap-[68px]">
-          <img class="w-[182px] h-[182px] object-contain" src="https://sportboxd.com/img/crests/${league}/${homeTeam}.png" />
+          <img class="w-[182px] h-[182px] object-contain" src="https://sportboxd.com/img/crests/${homeTeam}.png" />
           <p class="text-neutral-200 font-semibold text-[84px]">X</p>
-          <img class="w-[182px] h-[182px] object-contain" src="https://sportboxd.com/img/crests/${league}/${awayTeam}.png" />
+          <img class="w-[182px] h-[182px] object-contain" src="https://sportboxd.com/img/crests/${awayTeam}.png" />
         </div>
       </body>
     </html>

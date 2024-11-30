@@ -38,7 +38,7 @@ const CrestComponent = ({ league, team }: { league: string; team: string }) => {
     <div className="w-full flex flex-col items-center px-3 gap-2">
       <img
         className="h-11"
-        src={`/img/crests/${league}/${team}.png`}
+        src={`/img/crests/${team}.png`}
         alt={`escudo do time da casa, ${team}`}
         onError={(e) => {
           (e.target as HTMLImageElement).src = "/img/crest_fallback.png";
