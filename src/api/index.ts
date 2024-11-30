@@ -206,7 +206,7 @@ async function postRating(data: {
   comment: string;
   match_id: string;
 }) {
-  await api.post(`/ratings/`, data).catch(() => {
+  await api.put(`/ratings/`, data).catch(() => {
     throw new Error("Erro ao publicar avaliação");
   });
 }

@@ -48,9 +48,9 @@ const getHTMLTemplate = (
                   <p class="text-sm leading-[0.875rem] text-neutral-200 mb-1">${ratingTitle}</p>
                 </div>
                 <div class="flex items-center gap-1">
-                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/${league}/${homeTeam}.png">
+                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/crests/${homeTeam}.png">
                   <p class="text-sm text-neutral-200">${homeScore} - ${awayScore}</p>
-                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/${league}/${awayTeam}.png">
+                  <img class="h-8 w-8 object-contain" src="https://sportboxd.com/img/crests/${awayTeam}.png">
                 </div>
             </div>
             <p class="text-lg text-neutral-200 font-light line-clamp-2">${ratingComment}</p>

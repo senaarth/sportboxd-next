@@ -106,7 +106,7 @@ export function ShareRatingModal({
               <div className="flex items-center gap-1">
                 <img
                   className="h-6 w-6 object-contain"
-                  src={`/img/crests/${match.league}/${match.homeTeam}.png`}
+                  src={`/img/crests/${match.homeTeam}.png`}
                   alt={`escudo do time da casa, ${match.homeTeam}`}
                   onError={(e) => {
                     (e.target as HTMLImageElement).src =
@@ -118,7 +118,7 @@ export function ShareRatingModal({
                 </p>
                 <img
                   className="h-6 w-6 object-contain"
-                  src={`/img/crests/${match.league}/${match.awayTeam}.png`}
+                  src={`/img/crests/${match.awayTeam}.png`}
                   alt={`escudo do time da casa, ${match.awayTeam}`}
                   onError={(e) => {
                     (e.target as HTMLImageElement).src =
