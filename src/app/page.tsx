@@ -232,8 +232,8 @@ export default function Home() {
     isLoading: isLoadingMostCommented,
   } = useQuery<{ matches: Match[]; totalCount: number }>(
     ["most-commented-matches"],
-    async () =>
-      await getMatches(fromDate, toDate, undefined, 0, "-ratings_num", 5)
+    // todo voltar pra mais comentadas
+    async () => await getMatches(fromDate, toDate, "LIB", 0, "-date", 5)
   );
 
   return (
@@ -268,7 +268,7 @@ export default function Home() {
         </div>
         <div className="w-full max-w-4xl flex flex-col items-start justify-start gap-2 py-4">
           <p className="text-neutral-200 font-semibold text-sm ml-4">
-            Mais comentados
+            Em destaque
           </p>
           <div className="w-full max-w-full overflow-auto flex items-center justify-start gap-2">
             {isLoadingMostCommented || errorMostCommented ? (
