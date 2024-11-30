@@ -7,6 +7,7 @@ declare global {
     label: string;
     logo: string;
     isAvailable: boolean;
+    isRecentlyAdded?: boolean;
   };
 
   type Match = {

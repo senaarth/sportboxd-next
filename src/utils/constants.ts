@@ -5,6 +5,7 @@ const availableLeagues: League[] = [
     label: "Copa Libertadores",
     logo: "/img/leagues/liberta.svg",
     isAvailable: true,
+    isRecentlyAdded: true,
   },
   {
     code: "BSA",
