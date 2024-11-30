@@ -62,6 +62,7 @@ export default function MatchPage() {
     error,
     isLoading,
     refetch: refetchMatch,
+    isRefetching,
   } = useQuery<Match>(["match", id], async () => {
     if (!id) return {};
     return await getMatchById(id);
@@ -231,6 +232,7 @@ export default function MatchPage() {
                     match={match}
                     rating={sharedRating}
                     setRatingToShare={setRatingToShare}
+                    isRefetching={isRefetching}
                   />
                 </>
               ) : null}
@@ -241,6 +243,7 @@ export default function MatchPage() {
                     key={rating.ratingId}
                     rating={rating}
                     setRatingToShare={setRatingToShare}
+                    isRefetching={isRefetching}
                   />
                 ) : null
               )}

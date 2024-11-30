@@ -68,6 +68,7 @@ declare global {
     comment: string;
     rating: number;
     likes: string[];
+    dislikes: string[];
     replies: RatingReply[];
   };
 

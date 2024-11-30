@@ -34,7 +34,6 @@ export default function RatingPage() {
   const id = params.rating_id;
   const { user, isAuthenticated, openLoginModal } = useAuth();
   const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);
-  const [replies, setReplies] = useState<RatingReply[]>([]);
   const {
     data: rating,
     error,
@@ -55,7 +54,7 @@ export default function RatingPage() {
   });
   const { mutate: requestRatingLike, isLoading: isLikeLoading } = useMutation({
     mutationFn: async (option: string) => {
-      if (!rating) return;
+      if (!rating || !user?.uid || rating.dislikes.includes(user.uid)) return;
       await likeRating(rating.ratingId, option);
     },
     onSuccess: () => {
@@ -63,6 +62,17 @@ export default function RatingPage() {
       if (rating) queryClient.refetchQueries(["rating", rating.ratingId]);
     },
   });
+  const { mutate: requestRatingDislike, isLoading: isDislikeLoading } =
+    useMutation({
+      mutationFn: async (option: string) => {
+        if (!rating || !user?.uid || rating.likes.includes(user.uid)) return;
+        await likeRating(rating.ratingId, option);
+      },
+      onSuccess: () => {
+        if (match) queryClient.refetchQueries(["match", match.matchId]);
+        if (rating) queryClient.refetchQueries(["rating", rating.ratingId]);
+      },
+    });
   const { mutate: submitForm, isLoading: isSubmittingComment } = useMutation({
     mutationFn: async (data: { comment: string }) => {
       if (!isAuthenticated) {
@@ -71,16 +81,7 @@ export default function RatingPage() {
       }
       if (!match || !rating || !user) return;
       await postRatingReply(match?.matchId, data.comment, rating?.ratingId);
-      if (!user.displayName) return;
-      setReplies([
-        {
-          author: user.displayName,
-          created_at: new Date().toDateString(),
-          comment: data.comment,
-          _id: `${user.displayName}-${data.comment}`,
-        },
-        ...replies,
-      ]);
+      await queryClient.refetchQueries(["rating", rating.ratingId]);
     },
   });
   const {
@@ -110,6 +111,9 @@ export default function RatingPage() {
             <Link
               className="flex items-center justify-center gap-2 text-base text-neutral-200 hover:brightness-75 transition-all"
               href={`/partidas/${matchId}`}
+              onClick={() => {
+                if (match) queryClient.refetchQueries(["match", match.matchId]);
+              }}
             >
               Voltar
             </Link>
@@ -152,11 +156,12 @@ export default function RatingPage() {
         </div>
       </div>
       <div className="w-full flex flex-col items-center gap-4 mx-auto p-4 pb-12">
-        <div className="w-full max-w-4xl flex items-center justify-start gap-2">
+        <div className="w-full max-w-4xl flex items-center justify-start gap-1">
           <div className="flex items-center gap-1">
             <button
-              className="mr-0.5"
+              className="mr-0.5 disabled:cursor-not-allowed"
               type="button"
+              disabled={!!user?.uid && rating.dislikes.includes(user.uid)}
               onClick={() => {
                 if (!isAuthenticated || !user?.uid) {
                   openLoginModal();
@@ -179,13 +184,13 @@ export default function RatingPage() {
                 />
               ) : (
                 <img
-                  className="w-5 h-5 rotate-180"
-                  src="/img/icons/thumbs_down_outline.svg"
+                  className="w-5 h-5"
+                  src="/img/icons/thumbs_up_outline.svg"
                   alt="ícone de curtida"
                 />
               )}
             </button>
-            <p className="text-sm text-neutral-600">
+            <p className="text-sm text-neutral-600 w-4">
               {isLikeLoading || isRefetchingMatch || isRefetchingRating ? (
                 <Loading size="xs" color="neutral" />
               ) : (
@@ -193,8 +198,49 @@ export default function RatingPage() {
               )}
             </p>
           </div>
+          <div className="flex items-center gap-1">
+            <button
+              className="mr-0.5 disabled:cursor-not-allowed"
+              type="button"
+              disabled={!!user?.uid && rating.likes.includes(user.uid)}
+              onClick={() => {
+                if (!isAuthenticated || !user?.uid) {
+                  openLoginModal();
+                  return;
+                }
+
+                if (rating.dislikes.includes(user.uid)) {
+                  requestRatingDislike("-dislikes");
+                  return;
+                }
+
+                requestRatingDislike("dislikes");
+              }}
+            >
+              {!!user && rating.dislikes.includes(user?.uid) ? (
+                <img
+                  className="w-5 h-5"
+                  src="/img/icons/thumbs_down_filled.svg"
+                  alt="ícone de descurtida"
+                />
+              ) : (
+                <img
+                  className="w-5 h-5"
+                  src="/img/icons/thumbs_down_outline.svg"
+                  alt="ícone de descurtida"
+                />
+              )}
+            </button>
+            <p className="text-sm text-neutral-600 w-4">
+              {isDislikeLoading || isRefetchingMatch || isRefetchingRating ? (
+                <Loading size="xs" color="neutral" />
+              ) : (
+                rating.dislikes.length
+              )}
+            </p>
+          </div>
           <p className="ml-auto text-base text-neutral-400 font-semibold">
-            {replies.length} Respostas
+            {rating.replies.length} Respostas
           </p>
         </div>
         <form
@@ -222,9 +268,12 @@ export default function RatingPage() {
           </button>
         </form>
         <span className="w-full max-w-4xl h-[1px] bg-neutral-800" />
-        <p className="w-full max-w-4xl text-lg text-neutral-400">Comentários</p>
+        <p className="w-full max-w-4xl text-lg text-neutral-400 flex items-center gap-2">
+          Respostas
+          {isRefetchingRating ? <Loading size="xs" color="neutral" /> : null}
+        </p>
         <div className="w-full max-w-4xl flex flex-col gap-2">
-          {replies.map((reply) => {
+          {rating.replies.map((reply) => {
             return (
               <div
                 key={reply._id}

@@ -14,13 +14,14 @@ export const RatingCard = ({
   match,
   rating,
   setRatingToShare,
+  isRefetching,
 }: {
   match: Match;
   rating: Rating;
   setRatingToShare: Dispatch<SetStateAction<Rating | null>>;
+  isRefetching: boolean;
 }) => {
   const { isAuthenticated, openLoginModal, user } = useAuth();
-  const [likes, setLikes] = useState<Array<string>>(rating.likes);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
   const { mutate: requestPreviewCreation } = useMutation({
@@ -31,22 +32,24 @@ export const RatingCard = ({
   });
   const { mutate: requestRatingLike, isLoading: isLikeLoading } = useMutation({
     mutationFn: async (option: string) => {
+      if (!rating || !user?.uid || rating.dislikes.includes(user.uid)) return;
       await likeRating(rating.ratingId, option);
-
-      if (option === "likes") addUserIdToLikes();
-      else removeUserIdFromLikes();
+    },
+    onSuccess: () => {
+      if (match) queryClient.refetchQueries(["match", match.matchId]);
     },
   });
+  const { mutate: requestRatingDislike, isLoading: isDislikeLoading } =
+    useMutation({
+      mutationFn: async (option: string) => {
+        if (!rating || !user?.uid || rating.likes.includes(user.uid)) return;
+        await likeRating(rating.ratingId, option);
+      },
+      onSuccess: () => {
+        if (match) queryClient.refetchQueries(["match", match.matchId]);
+      },
+    });
   const textRef = useRef<HTMLParagraphElement>(null);
-
-  const addUserIdToLikes = () => {
-    if (user?.uid && !likes.includes(user.uid)) setLikes([...likes, user.uid]);
-  };
-
-  const removeUserIdFromLikes = () => {
-    if (user?.uid && likes.includes(user.uid))
-      setLikes(likes.filter((id) => id !== user.uid));
-  };
 
   const checkOverflow = () => {
     if (textRef.current) {
@@ -110,15 +113,16 @@ export const RatingCard = ({
       <div className="w-full flex items-center justify-between mt-4">
         <div className="flex items-center gap-1">
           <button
-            className="mr-0.5"
+            className="mr-0.5 disabled:cursor-not-allowed"
             type="button"
+            disabled={!!user?.uid && rating.dislikes.includes(user.uid)}
             onClick={() => {
               if (!isAuthenticated || !user?.uid) {
                 openLoginModal();
                 return;
               }
 
-              if (likes.includes(user.uid)) {
+              if (rating.likes.includes(user.uid)) {
                 requestRatingLike("-likes");
                 return;
               }
@@ -126,7 +130,7 @@ export const RatingCard = ({
               requestRatingLike("likes");
             }}
           >
-            {!!user && likes.includes(user?.uid) ? (
+            {!!user && rating.likes.includes(user?.uid) ? (
               <img
                 className="w-4 h-4"
                 src="/img/icons/thumbs_up_filled.svg"
@@ -140,17 +144,58 @@ export const RatingCard = ({
               />
             )}
           </button>
-          <p className="text-sm text-neutral-600">
-            {isLikeLoading ? (
+          <p className="text-sm text-neutral-600 w-4">
+            {isLikeLoading || isRefetching ? (
               <Loading size="xs" color="neutral" />
             ) : (
-              likes.length
+              rating.likes.length
+            )}
+          </p>
+        </div>
+        <div className="flex items-center gap-1 ml-1">
+          <button
+            className="mr-0.5 disabled:cursor-not-allowed"
+            type="button"
+            disabled={!!user?.uid && rating.likes.includes(user.uid)}
+            onClick={() => {
+              if (!isAuthenticated || !user?.uid) {
+                openLoginModal();
+                return;
+              }
+
+              if (rating.dislikes.includes(user.uid)) {
+                requestRatingDislike("-dislikes");
+                return;
+              }
+
+              requestRatingDislike("dislikes");
+            }}
+          >
+            {!!user && rating.dislikes.includes(user?.uid) ? (
+              <img
+                className="w-4 h-4"
+                src="/img/icons/thumbs_down_filled.svg"
+                alt="ícone de descurtida"
+              />
+            ) : (
+              <img
+                className="w-4 h-4"
+                src="/img/icons/thumbs_down_outline.svg"
+                alt="ícone de descurtida"
+              />
+            )}
+          </button>
+          <p className="text-sm text-neutral-600 w-4">
+            {isDislikeLoading || isRefetching ? (
+              <Loading size="xs" color="neutral" />
+            ) : (
+              rating.dislikes.length
             )}
           </p>
         </div>
         <Link
           href={`/avaliacoes/${match.matchId}/${rating.ratingId}`}
-          className="flex items-center gap-1 ml-2"
+          className="flex items-center gap-1 ml-1"
           onClick={() => {
             queryClient.refetchQueries(["match", match.matchId]);
             queryClient.refetchQueries(["rating", rating.ratingId]);
@@ -161,7 +206,7 @@ export const RatingCard = ({
             {rating.replies?.length || 0}
           </p>
         </Link>
-        <span className="h-5 w-[1px] bg-neutral-700 mx-2" />
+        <span className="h-5 w-[1px] bg-neutral-700 mx-3" />
         <Link
           className="font-semibold text-sm text-neutral-400"
           href={`/avaliacoes/${match.matchId}/${rating.ratingId}`}
