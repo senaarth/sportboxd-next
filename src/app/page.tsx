@@ -88,7 +88,7 @@ function LeagueSection({
         league.code,
         pageParam,
         ordering,
-        5
+        3
       );
       return results;
     },
@@ -98,7 +98,7 @@ function LeagueSection({
         const totalPages = Math.ceil(
           lastPage.totalCount / lastPage.matches.length
         );
-        const nextPage = allPages.length + 1;
+        const nextPage = allPages.length;
         return nextPage <= totalPages ? nextPage : undefined;
       },
     }
