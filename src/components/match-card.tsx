@@ -42,11 +42,11 @@ export function MatchCard({
         ) : (
           <p className="text-neutral-500 text-xs flex items-center gap-2">
             {status !== "IN_PLAY" ? (
-              matchStatusLabelMap[status]
+              matchStatusLabelMap[status] || ""
             ) : (
               <>
                 <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
-                {matchStatusLabelMap[status]}
+                {matchStatusLabelMap[status] || ""}
               </>
             )}
           </p>

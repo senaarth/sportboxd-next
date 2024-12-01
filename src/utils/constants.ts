@@ -41,6 +41,7 @@ const matchStatusLabelMap: Record<string, string> = {
   FINISHED: "Encerrado",
   IN_PLAY: "Ao vivo",
   PRE_GAME: "Pré-jogo",
+  PAUSED: "Intervalo",
 };
 
 export { availableLeagues, matchStatusLabelMap };

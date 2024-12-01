@@ -155,8 +155,8 @@ export default function MatchPage() {
                   </p>
                 </div>
                 <p className="text-xs text-neutral-200 flex items-center gap-2 text-center">
-                  {match.status !== "IN_PLAY" ? (
-                    `${matchStatusLabelMap[match.status]} - ${formatDateLabel(match.date)}`
+                  {match.status === "IN_PLAY" ? (
+                    `${!!matchStatusLabelMap[match.status] ? `${matchStatusLabelMap[match.status]} - ` : ""}${formatDateLabel(match.date)}`
                   ) : (
                     <>
                       <span className="h-1 w-1 rounded-full bg-lime-500 animate-ping" />
