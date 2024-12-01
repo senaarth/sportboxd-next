@@ -14,16 +14,16 @@ export const RatingCard = ({
   match,
   rating,
   setRatingToShare,
-  isRefetching,
 }: {
   match: Match;
   rating: Rating;
   setRatingToShare: Dispatch<SetStateAction<Rating | null>>;
-  isRefetching: boolean;
 }) => {
   const { isAuthenticated, openLoginModal, user } = useAuth();
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
+  const [useExtraLike, setUseExtraLike] = useState<boolean>(false);
+  const [useExtraDislike, setUseExtraDislike] = useState<boolean>(false);
   const { mutate: requestPreviewCreation } = useMutation({
     mutationFn: async () => {
       await createRatingPreview(match, rating);
@@ -34,6 +34,7 @@ export const RatingCard = ({
     mutationFn: async (option: string) => {
       if (!rating || !user?.uid || rating.dislikes.includes(user.uid)) return;
       await likeRating(rating.ratingId, option);
+      if (option === "likes") setUseExtraLike(true);
     },
     onSuccess: () => {
       if (match) queryClient.refetchQueries(["match", match.matchId]);
@@ -44,6 +45,7 @@ export const RatingCard = ({
       mutationFn: async (option: string) => {
         if (!rating || !user?.uid || rating.likes.includes(user.uid)) return;
         await likeRating(rating.ratingId, option);
+        if (option === "dislikes") setUseExtraDislike(true);
       },
       onSuccess: () => {
         if (match) queryClient.refetchQueries(["match", match.matchId]);
@@ -60,6 +62,11 @@ export const RatingCard = ({
       setIsOverflowing(lines > 3);
     }
   };
+
+  useEffect(() => {
+    setUseExtraDislike(false);
+    setUseExtraLike(false);
+  }, [rating]);
 
   useEffect(() => {
     checkOverflow();
@@ -113,7 +120,7 @@ export const RatingCard = ({
       <div className="w-full flex items-center justify-between mt-4">
         <div className="flex items-center gap-1">
           <button
-            className="mr-0.5 disabled:cursor-not-allowed"
+            className="mr-0.5 disabled:cursor-not-allowed disabled:opacity-30"
             type="button"
             disabled={!!user?.uid && rating.dislikes.includes(user.uid)}
             onClick={() => {
@@ -130,7 +137,7 @@ export const RatingCard = ({
               requestRatingLike("likes");
             }}
           >
-            {!!user && rating.likes.includes(user?.uid) ? (
+            {(!!user && rating.likes.includes(user?.uid)) || useExtraLike ? (
               <img
                 className="w-4 h-4"
                 src="/img/icons/thumbs_up_filled.svg"
@@ -145,16 +152,16 @@ export const RatingCard = ({
             )}
           </button>
           <p className="text-sm text-neutral-600 w-4">
-            {isLikeLoading || isRefetching ? (
+            {isLikeLoading ? (
               <Loading size="xs" color="neutral" />
             ) : (
-              rating.likes.length
+              rating.likes.length + (useExtraLike ? 1 : 0)
             )}
           </p>
         </div>
         <div className="flex items-center gap-1 ml-1">
           <button
-            className="mr-0.5 disabled:cursor-not-allowed"
+            className="mr-0.5 disabled:cursor-not-allowed disabled:opacity-30"
             type="button"
             disabled={!!user?.uid && rating.likes.includes(user.uid)}
             onClick={() => {
@@ -171,7 +178,8 @@ export const RatingCard = ({
               requestRatingDislike("dislikes");
             }}
           >
-            {!!user && rating.dislikes.includes(user?.uid) ? (
+            {(!!user && rating.dislikes.includes(user?.uid)) ||
+            useExtraDislike ? (
               <img
                 className="w-4 h-4"
                 src="/img/icons/thumbs_down_filled.svg"
@@ -186,10 +194,10 @@ export const RatingCard = ({
             )}
           </button>
           <p className="text-sm text-neutral-600 w-4">
-            {isDislikeLoading || isRefetching ? (
+            {isDislikeLoading ? (
               <Loading size="xs" color="neutral" />
             ) : (
-              rating.dislikes.length
+              rating.dislikes.length + (useExtraDislike ? 1 : 0)
             )}
           </p>
         </div>

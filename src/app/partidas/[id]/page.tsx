@@ -34,7 +34,7 @@ const RatingProportionComponent = ({
   );
 };
 
-const CrestComponent = ({ league, team }: { league: string; team: string }) => {
+const CrestComponent = ({ team }: { team: string }) => {
   return (
     <div className="w-full flex flex-col items-center px-3 gap-2">
       <img
@@ -63,7 +63,6 @@ export default function MatchPage() {
     error,
     isLoading,
     refetch: refetchMatch,
-    isRefetching,
   } = useQuery<Match>(["match", id], async () => {
     if (!id) return {};
     return await getMatchById(id);
@@ -125,7 +124,7 @@ export default function MatchPage() {
               </p>
             ) : null}
             <div className="w-full p-4 grid grid-cols-3">
-              <CrestComponent league={match.league} team={match.homeTeam} />
+              <CrestComponent team={match.homeTeam} />
               <div className="flex flex-col items-center gap-3">
                 <div className="flex items-center justify-center gap-2">
                   <p className="text-3xl text-neutral-200 font-semibold flex items-center gap-2">
@@ -165,7 +164,7 @@ export default function MatchPage() {
                   )}
                 </p>
               </div>
-              <CrestComponent league={match.league} team={match.awayTeam} />
+              <CrestComponent team={match.awayTeam} />
             </div>
           </div>
         </div>
@@ -227,7 +226,6 @@ export default function MatchPage() {
                     match={match}
                     rating={sharedRating}
                     setRatingToShare={setRatingToShare}
-                    isRefetching={isRefetching}
                   />
                 </>
               ) : null}
@@ -238,7 +236,6 @@ export default function MatchPage() {
                     key={rating.ratingId}
                     rating={rating}
                     setRatingToShare={setRatingToShare}
-                    isRefetching={isRefetching}
                   />
                 ) : null
               )}

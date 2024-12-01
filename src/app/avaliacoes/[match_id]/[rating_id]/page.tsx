@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShareRatingModal } from "@/components/share-rating-modal";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -34,11 +34,12 @@ export default function RatingPage() {
   const id = params.rating_id;
   const { user, isAuthenticated, openLoginModal } = useAuth();
   const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);
+  const [useExtraLike, setUseExtraLike] = useState<boolean>(false);
+  const [useExtraDislike, setUseExtraDislike] = useState<boolean>(false);
   const {
     data: rating,
     error,
     isLoading,
-    isRefetching: isRefetchingRating,
   } = useQuery<Rating>(["rating", id], async () => {
     if (!id) return {};
     return await getRatingById(id);
@@ -47,7 +48,6 @@ export default function RatingPage() {
     data: match,
     error: matchError,
     isLoading: isMatchLoading,
-    isRefetching: isRefetchingMatch,
   } = useQuery<Match>(["match", matchId], async () => {
     if (!id) return {};
     return await getMatchById(matchId);
@@ -56,6 +56,7 @@ export default function RatingPage() {
     mutationFn: async (option: string) => {
       if (!rating || !user?.uid || rating.dislikes.includes(user.uid)) return;
       await likeRating(rating.ratingId, option);
+      if (option === "likes") setUseExtraLike(true);
     },
     onSuccess: () => {
       if (match) queryClient.refetchQueries(["match", match.matchId]);
@@ -67,6 +68,7 @@ export default function RatingPage() {
       mutationFn: async (option: string) => {
         if (!rating || !user?.uid || rating.likes.includes(user.uid)) return;
         await likeRating(rating.ratingId, option);
+        if (option === "dislikes") setUseExtraDislike(true);
       },
       onSuccess: () => {
         if (match) queryClient.refetchQueries(["match", match.matchId]);
@@ -91,6 +93,11 @@ export default function RatingPage() {
   } = useForm<CommentFormSchema>({
     resolver: zodResolver(commentFormSchema),
   });
+
+  useEffect(() => {
+    setUseExtraDislike(false);
+    setUseExtraLike(false);
+  }, [rating]);
 
   if (
     isLoading ||
@@ -159,7 +166,7 @@ export default function RatingPage() {
         <div className="w-full max-w-4xl flex items-center justify-start gap-1">
           <div className="flex items-center gap-1">
             <button
-              className="mr-0.5 disabled:cursor-not-allowed"
+              className="mr-0.5 disabled:cursor-not-allowed disabled:opacity-30"
               type="button"
               disabled={!!user?.uid && rating.dislikes.includes(user.uid)}
               onClick={() => {
@@ -176,7 +183,7 @@ export default function RatingPage() {
                 requestRatingLike("likes");
               }}
             >
-              {!!user && rating.likes.includes(user?.uid) ? (
+              {(!!user && rating.likes.includes(user?.uid)) || useExtraLike ? (
                 <img
                   className="w-5 h-5"
                   src="/img/icons/thumbs_up_filled.svg"
@@ -191,16 +198,16 @@ export default function RatingPage() {
               )}
             </button>
             <p className="text-sm text-neutral-600 w-4">
-              {isLikeLoading || isRefetchingMatch || isRefetchingRating ? (
+              {isLikeLoading ? (
                 <Loading size="xs" color="neutral" />
               ) : (
-                rating.likes.length
+                rating.likes.length + (useExtraLike ? 1 : 0)
               )}
             </p>
           </div>
           <div className="flex items-center gap-1">
             <button
-              className="mr-0.5 disabled:cursor-not-allowed"
+              className="mr-0.5 disabled:cursor-not-allowed disabled:opacity-30"
               type="button"
               disabled={!!user?.uid && rating.likes.includes(user.uid)}
               onClick={() => {
@@ -217,7 +224,8 @@ export default function RatingPage() {
                 requestRatingDislike("dislikes");
               }}
             >
-              {!!user && rating.dislikes.includes(user?.uid) ? (
+              {(!!user && rating.dislikes.includes(user?.uid)) ||
+              useExtraDislike ? (
                 <img
                   className="w-5 h-5"
                   src="/img/icons/thumbs_down_filled.svg"
@@ -232,10 +240,10 @@ export default function RatingPage() {
               )}
             </button>
             <p className="text-sm text-neutral-600 w-4">
-              {isDislikeLoading || isRefetchingMatch || isRefetchingRating ? (
+              {isDislikeLoading ? (
                 <Loading size="xs" color="neutral" />
               ) : (
-                rating.dislikes.length
+                rating.dislikes.length + (useExtraDislike ? 1 : 0)
               )}
             </p>
           </div>
@@ -270,7 +278,6 @@ export default function RatingPage() {
         <span className="w-full max-w-4xl h-[1px] bg-neutral-800" />
         <p className="w-full max-w-4xl text-lg text-neutral-400 flex items-center gap-2">
           Respostas
-          {isRefetchingRating ? <Loading size="xs" color="neutral" /> : null}
         </p>
         <div className="w-full max-w-4xl flex flex-col gap-2">
           {rating.replies.map((reply) => {
