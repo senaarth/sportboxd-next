@@ -99,7 +99,7 @@ function LeagueSection({
           lastPage.totalCount / lastPage.matches.length
         );
         const nextPage = allPages.length;
-        return nextPage <= totalPages ? nextPage : undefined;
+        return nextPage < totalPages ? nextPage : undefined;
       },
     }
   );

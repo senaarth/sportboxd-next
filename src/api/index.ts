@@ -126,6 +126,7 @@ async function getMatchById(matchId: string) {
           createdAt.setHours(createdAt.getHours() - 3);
           return {
             ...rating,
+            authorId: rating.author_id,
             ratingId: rating._id,
             matchId: rating.match_id,
             createdAt,
@@ -168,6 +169,7 @@ async function getMatchRatings(matchId: string, ratingId: string | null) {
         createdAt.setHours(createdAt.getHours() - 3);
         return {
           ...rating,
+          authorId: rating.author_id,
           ratingId: rating._id,
           matchId: rating.match_id,
           createdAt,
@@ -207,6 +209,12 @@ async function postRating(data: {
   match_id: string;
 }) {
   await api.put(`/ratings/`, data).catch(() => {
+    throw new Error("Erro ao publicar avaliação");
+  });
+}
+
+async function deleteRating(matchId: string) {
+  await api.delete(`/ratings/${matchId}`).catch(() => {
     throw new Error("Erro ao publicar avaliação");
   });
 }
@@ -267,12 +275,13 @@ async function postRatingReply(
 export {
   createMatchPreview,
   createRatingPreview,
-  getMatches,
+  deleteRating,
   getMatchById,
+  getMatches,
   getMatchRatings,
-  postRating,
-  updateRatingLikes,
-  likeRating,
   getRatingById,
+  likeRating,
+  postRating,
   postRatingReply,
+  updateRatingLikes,
 };

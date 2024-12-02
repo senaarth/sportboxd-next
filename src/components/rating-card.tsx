@@ -1,14 +1,21 @@
 import { formatDateLabel } from "@/utils/date";
-import { ChevronDown, MessageSquareText } from "lucide-react";
+import { ChevronDown, EllipsisVertical, MessageSquareText } from "lucide-react";
 import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
 import { useMutation } from "react-query";
 import { Loading } from "@/components/loading";
-import { createRatingPreview, likeRating } from "@/api";
+import { createRatingPreview, deleteRating, likeRating } from "@/api";
 import { useAuth } from "@/contexts/auth";
 import Link from "next/link";
 import { queryClient } from "@/app/layout";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 export const RatingCard = ({
   match,
@@ -19,6 +26,7 @@ export const RatingCard = ({
   rating: Rating;
   setRatingToShare: Dispatch<SetStateAction<Rating | null>>;
 }) => {
+  const { toast } = useToast();
   const { isAuthenticated, openLoginModal, user } = useAuth();
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
@@ -51,6 +59,20 @@ export const RatingCard = ({
         if (match) queryClient.refetchQueries(["match", match.matchId]);
       },
     });
+  const { mutate: requestRatingDeletion } = useMutation({
+    mutationFn: async () => {
+      if (!match || !user) return;
+      await deleteRating(match.matchId);
+    },
+    onSuccess: () => {
+      toast({ title: "Sua avaliação foi deletada com sucesso" });
+      if (match) queryClient.refetchQueries(["match", match.matchId]);
+    },
+    onError: () => {
+      toast({ title: "Houve um erro ao tentar deletar sua avaliação" });
+      if (match) queryClient.refetchQueries(["match", match.matchId]);
+    },
+  });
   const textRef = useRef<HTMLParagraphElement>(null);
 
   const checkOverflow = () => {
@@ -239,6 +261,21 @@ export const RatingCard = ({
             alt="ícone de compartilhar"
           />
         </button>
+        {rating.authorId === user?.uid ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="p-1 rounded hover:bg-neutral-800">
+              <EllipsisVertical color="#D9D9D9" size={16} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => requestRatingDeletion()}
+              >
+                Deletar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </div>
     </div>
   );
