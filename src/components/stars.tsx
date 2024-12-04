@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 const colorVariants = {
@@ -53,6 +53,8 @@ export function Stars({
 }: StarsProps) {
   const [starsToHighlightNum, setStarsToHighlightNum] =
     useState<number>(number);
+
+  useEffect(() => setStarsToHighlightNum(number), [number]);
 
   return (
     <div

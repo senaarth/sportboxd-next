@@ -1,5 +1,10 @@
 import { formatDateLabel } from "@/utils/date";
-import { ChevronDown, EllipsisVertical, MessageSquareText } from "lucide-react";
+import {
+  ChevronDown,
+  EllipsisVertical,
+  MessageSquareText,
+  PencilIcon,
+} from "lucide-react";
 import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { Stars } from "@/components/stars";
@@ -21,10 +26,12 @@ export const RatingCard = ({
   match,
   rating,
   setRatingToShare,
+  onEdit,
 }: {
   match: Match;
   rating: Rating;
   setRatingToShare: Dispatch<SetStateAction<Rating | null>>;
+  onEdit?: () => void;
 }) => {
   const { toast } = useToast();
   const { isAuthenticated, openLoginModal, user } = useAuth();
@@ -267,8 +274,16 @@ export const RatingCard = ({
               <EllipsisVertical color="#D9D9D9" size={16} />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              {onEdit ? (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => onEdit()}
+                >
+                  Editar
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-red-600"
                 onClick={() => requestRatingDeletion()}
               >
                 Deletar

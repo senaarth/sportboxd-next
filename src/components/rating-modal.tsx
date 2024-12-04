@@ -92,7 +92,7 @@ const CrestComponent = ({ league, team }: { league: string; team: string }) => {
 };
 
 interface RatingModalProps {
-  defaultValue: number;
+  defaultValue: Partial<Rating> | undefined;
   isOpen: boolean;
   match: Match;
   onClose: () => void;
@@ -139,7 +139,11 @@ export function RatingModal({
     watch,
   } = useForm<RatingFormSchema>({
     resolver: zodResolver(ratingFormSchema),
-    defaultValues: { rating: defaultValue },
+    defaultValues: {
+      title: defaultValue?.title || "",
+      comment: defaultValue?.comment || "",
+      rating: defaultValue?.rating,
+    },
   });
 
   useEffect(() => reset(), [isOpen, reset]);
@@ -187,7 +191,7 @@ export function RatingModal({
             <span className="w-full h-[1px] bg-neutral-800 my-4" />
             <Stars
               color="lime"
-              number={watch("rating") || defaultValue}
+              number={watch("rating") || defaultValue?.rating || 0}
               onStarClick={(number) => setValue("rating", number)}
               size="lg"
             />

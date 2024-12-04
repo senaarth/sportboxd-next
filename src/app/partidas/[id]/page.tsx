@@ -13,6 +13,7 @@ import { useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 import { availableLeagues, matchStatusLabelMap } from "@/utils/constants";
 import { formatDateLabel } from "@/utils/date";
+import { useAuth } from "@/contexts/auth";
 
 const RatingProportionComponent = ({
   rating,
@@ -54,6 +55,7 @@ export default function MatchPage() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const id = params.id;
+  const { user } = useAuth();
   const [isRatingModalOpen, setRatingModalOpen] = useState<boolean>(false);
   const [ratingToShare, setRatingToShare] = useState<Rating | null>(null);
   const [ratingValue, setRatingValue] = useState<number>(0);
@@ -73,6 +75,10 @@ export default function MatchPage() {
         (rating) => rating.ratingId === ratingId || rating._id === ratingId
       ),
     [match, ratingId]
+  );
+  const userRating = useMemo(
+    () => match?.ratings.find((rating) => rating.authorId === user?.uid),
+    [match]
   );
   const matchLeague = useMemo(() => {
     return availableLeagues.find((league) => league.code === match?.league);
@@ -174,7 +180,7 @@ export default function MatchPage() {
           <p className="text-sm text-neutral-200">Toque para avaliar</p>
           <Stars
             color="lime"
-            number={0}
+            number={userRating?.rating || 0}
             onStarClick={(value) => {
               setRatingValue(value);
               setRatingModalOpen(true);
@@ -226,6 +232,10 @@ export default function MatchPage() {
                     match={match}
                     rating={sharedRating}
                     setRatingToShare={setRatingToShare}
+                    onEdit={() => {
+                      if (!user || sharedRating.authorId !== user.uid) return;
+                      setRatingModalOpen(true);
+                    }}
                   />
                 </>
               ) : null}
@@ -236,6 +246,10 @@ export default function MatchPage() {
                     key={rating.ratingId}
                     rating={rating}
                     setRatingToShare={setRatingToShare}
+                    onEdit={() => {
+                      if (!user || rating.authorId !== user.uid) return;
+                      setRatingModalOpen(true);
+                    }}
                   />
                 ) : null
               )}
@@ -256,7 +270,10 @@ export default function MatchPage() {
       </div>
       {isRatingModalOpen ? (
         <RatingModal
-          defaultValue={ratingValue}
+          defaultValue={{
+            ...(userRating || {}),
+            rating: ratingValue || userRating?.rating || 0,
+          }}
           isOpen={isRatingModalOpen}
           match={match}
           onClose={() => setRatingModalOpen(false)}
